@@ -43,6 +43,8 @@ Both journeys share one route tree. The entry point only sets where the user sta
 | `/saved` | Saved / liked places | both |
 | `/plan/:ekatte` | Personalized relocation plan / checklist | both |
 
+**Choosing depth:** both start pages (`/start/known`, `/start/discover`) let the user pick Quick Match (5 questions) or Detailed Match (up to 13) before the questions start.
+
 **Progressive profiling:** one profile object with a `completeness` level (`quick` → `detailed`). "Upgrade to Detailed Match" adds steps and never resets anything. Answers, swipes and saved places are kept and re-scored.
 
 ## 3. Folder structure (`apps/web/src`)

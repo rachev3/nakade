@@ -316,5 +316,11 @@
   "unit": {
     "min": "min",
     "years": "years"
+  },
+  "profileMode": {
+    "title": "How well should we get to know you?",
+    "quick": "5 questions, about a minute. Good enough to start.",
+    "detailed": "Up to 13 questions, about 3 minutes. Sharper matches.",
+    "note": "You can switch from Quick to Detailed at any time without losing anything."
   }
 }

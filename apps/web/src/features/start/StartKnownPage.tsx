@@ -1,20 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { z } from 'zod'
 import { usePatchProfile, useProfile, useSettlements } from '@/api/queries'
+import { ProfileModePicker } from '@/components/ProfileModePicker'
 import { ErrorState, Loading } from '@/components/States'
 import { Button } from '@/components/ui/button'
 import { NativeSelect } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { placeName } from '@/lib/format'
-import { useJourneyStore } from '@/lib/journey'
+import { nextAfterStart, useJourneyStore } from '@/lib/journey'
 
 const schema = z
   .object({
     from: z.string(),
     to: z.string().min(1, 'startKnown.toRequired'),
+    mode: z.enum(['quick', 'detailed']),
   })
   .refine((v) => !v.from || v.from !== v.to, { path: ['to'], message: 'startKnown.same' })
 
@@ -33,16 +35,17 @@ export default function StartKnownPage() {
     values: {
       from: profile?.answers.current_location ?? '',
       to: profile?.answers.destination ?? '',
+      mode: profile?.completeness === 'detailed' ? 'detailed' : 'quick',
     },
   })
 
   if (settlements.isPending) return <Loading />
   if (settlements.isError) return <ErrorState onRetry={() => void settlements.refetch()} />
 
-  const onSubmit = form.handleSubmit(async ({ from, to }) => {
+  const onSubmit = form.handleSubmit(async ({ from, to, mode }) => {
     await patch.mutateAsync({ answers: { current_location: from || null, destination: to } })
     start('known', to)
-    void navigate(profile?.completeness === 'none' ? '/profile/quick' : `/places/${to}`)
+    void navigate(nextAfterStart(mode, profile?.completeness, `/places/${to}`))
   })
 
   const options = [...settlements.data].sort((a, b) =>
@@ -51,7 +54,7 @@ export default function StartKnownPage() {
   const error = form.formState.errors.to?.message
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto flex max-w-md flex-col gap-6" noValidate>
+    <form onSubmit={onSubmit} className="mx-auto flex max-w-xl flex-col gap-6" noValidate>
       <h1 className="text-3xl sm:text-4xl">{t('startKnown.title')}</h1>
       <div className="space-y-2">
         <Label htmlFor="from">
@@ -88,6 +91,11 @@ export default function StartKnownPage() {
           </p>
         )}
       </div>
+      <Controller
+        control={form.control}
+        name="mode"
+        render={({ field }) => <ProfileModePicker value={field.value} onChange={field.onChange} />}
+      />
       <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
         {t('common.continue')}
       </Button>

@@ -36,3 +36,18 @@ export const useJourneyStore = create<JourneyState>()(
 export function afterProfilePath(journey: Journey | null, destination: string | null) {
   return journey === 'known' && destination ? `/places/${destination}` : '/discover'
 }
+
+/**
+ * Where to go after a start page, given the profile depth the user picked.
+ * Never repeats a flow that is already done, and never downgrades: picking Quick after a
+ * Detailed Match just goes to results.
+ */
+export function nextAfterStart(
+  flow: Flow,
+  completeness: 'none' | 'quick' | 'detailed' | undefined,
+  resultsPath: string,
+) {
+  if (completeness === 'detailed') return resultsPath
+  if (flow === 'detailed') return '/profile/detailed'
+  return completeness === 'quick' ? resultsPath : '/profile/quick'
+}
