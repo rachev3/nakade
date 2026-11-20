@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router'
 import { z } from 'zod'
 import { usePatchProfile, useProfile } from '@/api/queries'
 import { ChoiceChips } from '@/components/ChoiceChips'
+import { ProfileModePicker } from '@/components/ProfileModePicker'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useJourneyStore } from '@/lib/journey'
+import { nextAfterStart, useJourneyStore } from '@/lib/journey'
 
 const CHIPS = [
   'quiet',
@@ -22,7 +23,11 @@ const CHIPS = [
 ] as const
 
 const schema = z
-  .object({ text: z.string().max(500), chips: z.array(z.string()) })
+  .object({
+    text: z.string().max(500),
+    chips: z.array(z.string()),
+    mode: z.enum(['quick', 'detailed']),
+  })
   .refine((v) => v.text.trim().length > 0 || v.chips.length > 0, {
     path: ['chips'],
     message: 'startDiscover.atLeastOne',
@@ -42,15 +47,16 @@ export default function StartDiscoverPage() {
     values: {
       text: profile?.answers.lifestyle_text ?? '',
       chips: profile?.answers.lifestyle_chips ?? [],
+      mode: profile?.completeness === 'detailed' ? 'detailed' : 'quick',
     },
   })
 
-  const onSubmit = form.handleSubmit(async ({ text, chips }) => {
+  const onSubmit = form.handleSubmit(async ({ text, chips, mode }) => {
     await patch.mutateAsync({
       answers: { lifestyle_text: text.trim() || null, lifestyle_chips: chips },
     })
     start('discover')
-    void navigate(profile?.completeness === 'none' ? '/profile/quick' : '/discover')
+    void navigate(nextAfterStart(mode, profile?.completeness, '/discover'))
   })
 
   const error = form.formState.errors.chips?.message
@@ -87,6 +93,11 @@ export default function StartDiscoverPage() {
           </p>
         )}
       </div>
+      <Controller
+        control={form.control}
+        name="mode"
+        render={({ field }) => <ProfileModePicker value={field.value} onChange={field.onChange} />}
+      />
       <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
         {t('common.continue')}
       </Button>
