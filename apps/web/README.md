@@ -86,7 +86,7 @@ Rule: `features/*` import from `components/`, `api/` and `lib/`, never from each
 
 ### Styling
 
-Visual direction: **"Rodopi calm"**. It's warm, earthy and editorial: forest green and clay on cream, with a "forest night" dark theme. Headings use Lora; everything else uses Sofia Sans, a Bulgarian typeface with Bulgarian Cyrillic forms. Both fonts are self-hosted via Fontsource, so no Google Fonts requests are made. All colours live in `src/styles/tokens.css` (`:root` = light, `.dark` = dark), and components only use semantic names (`bg-primary`, `text-clay`, `text-fact-verified`, …). Swipe cards and place pages use a generated `<Landscape>` illustration until we have licensed photos. shadcn/ui components live in `src/components/ui` (`components.json` is set up, so `pnpm dlx shadcn@latest add <name>` works).
+Visual direction: **"Rodopi calm"**. It's warm, earthy and editorial: forest green and clay on cream, with a "forest night" dark theme. Headings use Lora; everything else uses Sofia Sans, a Bulgarian typeface with Bulgarian Cyrillic forms. Both fonts are self-hosted via Fontsource, so no Google Fonts requests are made. All colours live in `src/styles/tokens.css` (`:root` = light, `.dark` = dark), and components only use semantic names (`bg-primary`, `text-clay`, `text-fact-verified`, …). Swipe cards and place pages show a Wikimedia Commons photo via `<SettlementPhoto>` (files and credits in `public/settlements/`, from `data/pipeline/fetch_images.py`), with the generated `<Landscape>` illustration as the fallback for places without one. shadcn/ui components live in `src/components/ui` (`components.json` is set up, so `pnpm dlx shadcn@latest add <name>` works).
 
 ## Deploy
 
@@ -96,5 +96,5 @@ Visual direction: **"Rodopi calm"**. It's warm, earthy and editorial: forest gre
 ## Not done yet
 
 - Tests and the `web` CI workflow were skipped for the hackathon.
-- MapLibre map (placeholder `MapView`), real images on swipe cards.
-- Real photos for places (the `<Landscape>` illustration is a placeholder).
+- MapLibre map (placeholder `MapView`).
+- Photos for the 23 pilot settlements without one (see `missing` in `public/settlements/index.json`).
