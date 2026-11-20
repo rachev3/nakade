@@ -55,7 +55,10 @@
     "pick": "Choose a place",
     "fromRequired": "Choose where you live now",
     "toRequired": "Choose where you want to move",
-    "same": "Pick two different places"
+    "same": "Pick two different places",
+    "search": "Search a town or village…",
+    "noResults": "No such place in the list",
+    "clear": "Clear"
   },
   "startDiscover": {
     "title": "Describe the life you want",
@@ -484,7 +487,18 @@
     "saved": "Saved",
     "compare": "Compare selected ({{count}})",
     "select": "Select {{name}} for comparison",
-    "pickTwo": "Pick 2–3 places to compare"
+    "pickTwo": "Pick 2–3 places to compare",
+    "top": "Top {{rank}}",
+    "fit": "match",
+    "filters": {
+      "sort": "Sort",
+      "score": "Highest match",
+      "recent": "Recently added",
+      "show": "Show",
+      "all": "All",
+      "type": "Type",
+      "empty": "No saved places match these filters."
+    }
   },
   "compare": {
     "title": "Compare",
@@ -524,7 +538,6 @@
     "intro": "{{count}} places, coloured by how well they fit you. Click a pin for more.",
     "introNoProfile": "Take the quick profile and we'll colour the places by how well they fit you.",
     "startProfile": "Start the quick profile",
-    "top": "Top 10",
     "legend": "Legend",
     "fit": "{{value}}% match",
     "open": "Open the place →",
@@ -537,6 +550,26 @@
       "ok": "55–69%",
       "weak": "below 55%",
       "excluded": "Fails a must-have"
-    }
+    },
+    "listTitle": "All matches",
+    "listTitleBy": "Highest scores: {{dimension}}",
+    "filters": {
+      "title": "Filters",
+      "sort": "Sort by",
+      "sortScore": "Overall match",
+      "min": "Minimum match",
+      "any": "Any",
+      "type": "Type",
+      "all": "All",
+      "town": "Towns",
+      "village": "Villages",
+      "district": "Region",
+      "allDistricts": "All regions",
+      "hideExcluded": "Hide places that fail a must-have",
+      "shown": "Showing {{shown}} of {{total}}",
+      "reset": "Clear filters",
+      "empty": "No places match these filters. Try a lower minimum match."
+    },
+    "excludedHeading": "Fail a must-have"
   }
 }

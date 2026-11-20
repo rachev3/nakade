@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { z } from 'zod'
 import { usePatchProfile, useProfile, useSettlements } from '@/api/queries'
+import { PlaceSearch } from '@/components/PlaceSearch'
 import { ProfileModePicker } from '@/components/ProfileModePicker'
 import { ErrorState, Loading } from '@/components/States'
 import { Button } from '@/components/ui/button'
-import { NativeSelect } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { placeName } from '@/lib/format'
 import { nextAfterStart, useJourneyStore } from '@/lib/journey'
@@ -61,30 +61,35 @@ export default function StartKnownPage() {
           {t('startKnown.from')}{' '}
           <span className="text-muted-foreground">({t('common.optional')})</span>
         </Label>
-        <NativeSelect id="from" {...form.register('from')}>
-          <option value="">{t('startKnown.pick')}</option>
-          {options.map((s) => (
-            <option key={s.ekatte} value={s.ekatte}>
-              {placeName(s, i18n.language)}
-            </option>
-          ))}
-        </NativeSelect>
+        <Controller
+          control={form.control}
+          name="from"
+          render={({ field }) => (
+            <PlaceSearch
+              id="from"
+              options={options}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="to">{t('startKnown.to')}</Label>
-        <NativeSelect
-          id="to"
-          aria-invalid={!!error}
-          aria-describedby={error ? 'to-error' : undefined}
-          {...form.register('to')}
-        >
-          <option value="">{t('startKnown.pick')}</option>
-          {options.map((s) => (
-            <option key={s.ekatte} value={s.ekatte}>
-              {placeName(s, i18n.language)}
-            </option>
-          ))}
-        </NativeSelect>
+        <Controller
+          control={form.control}
+          name="to"
+          render={({ field }) => (
+            <PlaceSearch
+              id="to"
+              options={options}
+              value={field.value}
+              onChange={field.onChange}
+              invalid={!!error}
+              describedBy={error ? 'to-error' : undefined}
+            />
+          )}
+        />
         {error && (
           <p id="to-error" className="text-sm text-destructive">
             {t(error)}
