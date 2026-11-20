@@ -78,6 +78,24 @@ For forest, water and protected areas, `_count` is the number of **distinct name
 settlement area, plus unnamed polygons of at least 5 ha (so tiny unnamed ponds and forest fragments don't
 inflate it). A river crossing the area counts once.
 
+### Settlement photos
+
+`fetch_images.py` (stdlib only) downloads one photo per settlement from Wikimedia Commons:
+
+```bash
+python3 data/pipeline/fetch_images.py
+```
+
+- The photo is the settlement's Wikidata image (P18), found by EKATTE code (Wikidata P3990).
+  To pick a different photo, or add one where Wikidata has none, put the Commons file name in
+  `data/manual/settlement_images.csv` (`ekatte,commons_file,note`) and re-run. Manual rows win.
+- Output: `apps/web/public/settlements/<ekatte>.jpg` (1280 px wide) and `index.json` with, per settlement,
+  `src`, `width`, `height`, `author`, `licence`, `licence_url`, `commons_page` and a ready `credit` string.
+  Settlements without a photo are listed under `missing`; show an illustration for those.
+- **Credit is required.** Most Commons photos are CC BY or CC BY-SA: show `credit`, linked to `commons_page`,
+  wherever the photo appears.
+- Uses the regular Wikidata API, not the SPARQL endpoint, which throttles scripts hard.
+
 ### Known limits
 
 - Distances to amenities are straight-line, not by road. Only the oblast-centre times use road routing.
