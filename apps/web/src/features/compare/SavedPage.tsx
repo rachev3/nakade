@@ -1,3 +1,4 @@
+import { motion } from 'motion/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -9,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { placeName } from '@/lib/format'
+import { rise, smooth } from '@/lib/motion'
 
 const MAX_COMPARE = 3
 
@@ -45,11 +47,15 @@ export default function SavedPage() {
         <p className="text-muted-foreground">{t('saved.empty')}</p>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2">
-          {saved.data.map(({ settlement, action }) => {
+          {saved.data.map(({ settlement, action }, i) => {
             const name = placeName(settlement, i18n.language)
             const checked = selected.includes(settlement.ekatte)
             return (
-              <li key={settlement.ekatte}>
+              <motion.li
+                key={settlement.ekatte}
+                {...rise}
+                transition={smooth(0.35, Math.min(i, 8) * 0.06)}
+              >
                 <Card className="h-full">
                   <div className="flex items-start justify-between gap-3">
                     <PlaceHeading place={settlement} as="h2" />
@@ -70,7 +76,7 @@ export default function SavedPage() {
                     </Button>
                   </div>
                 </Card>
-              </li>
+              </motion.li>
             )
           })}
         </ul>

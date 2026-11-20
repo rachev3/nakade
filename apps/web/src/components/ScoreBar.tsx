@@ -1,8 +1,11 @@
+import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import type { DimensionScore } from '@/api/types'
 import { percent } from '@/lib/format'
+import { smooth } from '@/lib/motion'
 
-export function ScoreBar({ dimension }: { dimension: DimensionScore }) {
+/** `index` staggers the fill animation when several bars appear together. */
+export function ScoreBar({ dimension, index = 0 }: { dimension: DimensionScore; index?: number }) {
   const { t } = useTranslation()
   const label = t(`dimension.${dimension.key}`)
   const value = dimension.score === null ? null : percent(dimension.score)
@@ -22,7 +25,12 @@ export function ScoreBar({ dimension }: { dimension: DimensionScore }) {
           aria-valuenow={value}
           className="h-2 overflow-hidden rounded-full bg-secondary"
         >
-          <span className="block h-full rounded-full bg-primary" style={{ width: `${value}%` }} />
+          <motion.span
+            className="block h-full rounded-full bg-primary"
+            initial={{ width: 0 }}
+            animate={{ width: `${value}%` }}
+            transition={smooth(0.7, 0.1 + index * 0.05)}
+          />
         </span>
       )}
       <span className="text-right text-xs text-muted-foreground tabular-nums">

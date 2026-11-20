@@ -100,8 +100,8 @@ export default function PlacePage() {
                 </p>
               </div>
               <div className="space-y-2">
-                {match.dimensions.map((d) => (
-                  <ScoreBar key={d.key} dimension={d} />
+                {match.dimensions.map((d, i) => (
+                  <ScoreBar key={d.key} dimension={d} index={i} />
                 ))}
               </div>
             </Card>

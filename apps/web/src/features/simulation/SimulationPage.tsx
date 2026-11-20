@@ -8,6 +8,7 @@ import { Scenario } from '@/components/Scenario'
 import { ErrorState, Loading } from '@/components/States'
 import { Button } from '@/components/ui/button'
 import { placeName } from '@/lib/format'
+import { smooth } from '@/lib/motion'
 
 /**
  * "Try Your New Life" stub. Each statement is tagged by the API: `fact` statements render as
@@ -51,7 +52,7 @@ export default function SimulationPage() {
             key={scene.id}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
+            transition={smooth(0.4, 0.1 + i * 0.08)}
             className="relative space-y-2"
           >
             <span

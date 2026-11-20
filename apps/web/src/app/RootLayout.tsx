@@ -1,10 +1,12 @@
 import { HeartIcon, MonitorIcon, MoonIcon, SearchIcon, SunIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Link, NavLink, Outlet, ScrollRestoration, useNavigation } from 'react-router'
+import { motion } from 'motion/react'
+import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigation } from 'react-router'
 import { DemoBadge } from '@/components/DemoBadge'
 import { Button } from '@/components/ui/button'
 import { LANGUAGES } from '@/lib/i18n'
-import { type Theme, useThemeStore } from '@/lib/theme'
+import { rise, smooth } from '@/lib/motion'
+import { applyTheme, type Theme, useThemeStore } from '@/lib/theme'
 import { cn } from '@/lib/utils'
 
 const THEMES: { value: Theme; icon: typeof SunIcon }[] = [
@@ -13,9 +15,21 @@ const THEMES: { value: Theme; icon: typeof SunIcon }[] = [
   { value: 'system', icon: MonitorIcon },
 ]
 
+/** Crossfades the whole page when the theme changes (View Transitions API, if available). */
+function switchTheme(next: Theme, setTheme: (t: Theme) => void) {
+  const run = () => {
+    applyTheme(next)
+    setTheme(next)
+  }
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!reduced && 'startViewTransition' in document) document.startViewTransition(run)
+  else run()
+}
+
 export function RootLayout() {
   const { t, i18n } = useTranslation()
   const navigation = useNavigation()
+  const location = useLocation()
   const { theme, setTheme } = useThemeStore()
   const nextTheme = THEMES[(THEMES.findIndex((x) => x.value === theme) + 1) % THEMES.length]!
   const ThemeIcon = THEMES.find((x) => x.value === theme)!.icon
@@ -73,7 +87,7 @@ export function RootLayout() {
             className="size-9"
             aria-label={`${t('nav.theme')}: ${t(`theme.${theme}`)}`}
             title={t(`theme.${nextTheme.value}`)}
-            onClick={() => setTheme(nextTheme.value)}
+            onClick={() => switchTheme(nextTheme.value, setTheme)}
           >
             <ThemeIcon aria-hidden />
           </Button>
@@ -87,7 +101,10 @@ export function RootLayout() {
         />
       </header>
       <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
-        <Outlet />
+        {/* Each route fades in gently; same-route updates (e.g. onboarding steps) don't re-trigger it */}
+        <motion.div key={location.pathname} {...rise} transition={smooth(0.3)}>
+          <Outlet />
+        </motion.div>
       </main>
       <ScrollRestoration />
     </div>

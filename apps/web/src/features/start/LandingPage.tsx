@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { useProfile } from '@/api/queries'
 import { Landscape } from '@/components/Landscape'
+import { Reveal } from '@/components/Reveal'
 import { Button } from '@/components/ui/button'
 import { afterProfilePath, useJourneyStore } from '@/lib/journey'
 import { cn } from '@/lib/utils'
@@ -52,28 +53,29 @@ export default function LandingPage() {
         )}
       </section>
       <div className="grid gap-3 sm:grid-cols-2">
-        {journeys.map(({ to, icon: Icon, key, tone }) => (
-          <Link
-            key={key}
-            to={to}
-            className="group flex items-center gap-4 rounded-2xl border bg-card p-4 transition-colors outline-none hover:border-primary/40 hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:p-5"
-          >
-            <span className={cn('grid size-12 shrink-0 place-items-center rounded-full', tone)}>
-              <Icon aria-hidden className="size-6" />
-            </span>
-            <span className="flex-1 space-y-0.5">
-              <span className="block font-serif text-xl font-medium">
-                {t(`landing.${key}.title`)}
+        {journeys.map(({ to, icon: Icon, key, tone }, i) => (
+          <Reveal key={key} index={i + 1} className="h-full">
+            <Link
+              to={to}
+              className="group flex h-full items-center gap-4 rounded-2xl border bg-card p-4 transition-[color,background-color,border-color,transform] outline-none hover:border-primary/40 hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 active:scale-[0.99] sm:p-5"
+            >
+              <span className={cn('grid size-12 shrink-0 place-items-center rounded-full', tone)}>
+                <Icon aria-hidden className="size-6" />
               </span>
-              <span className="block text-[15px] text-muted-foreground">
-                {t(`landing.${key}.body`)}
+              <span className="flex-1 space-y-0.5">
+                <span className="block font-serif text-xl font-medium">
+                  {t(`landing.${key}.title`)}
+                </span>
+                <span className="block text-[15px] text-muted-foreground">
+                  {t(`landing.${key}.body`)}
+                </span>
               </span>
-            </span>
-            <ArrowRightIcon
-              aria-hidden
-              className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
-            />
-          </Link>
+              <ArrowRightIcon
+                aria-hidden
+                className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
+          </Reveal>
         ))}
       </div>
       <p className="font-serif text-muted-foreground italic">{t('app.tagline')}</p>

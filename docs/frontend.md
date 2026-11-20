@@ -89,6 +89,7 @@ This is the most important UI rule in the product.
 | Fast | Route-level code splitting; maps and simulation lazy-loaded; target < 200 KB JS for the first screen |
 | Resumable | Profile progress persisted server-side by session; a reload never loses progress |
 | Light/dark | Tokens on `:root` with dark overrides |
+| Calm motion | One easing curve, 150–450ms, ≤ 24px movement (`apps/web/src/lib/motion.ts`). Page fade-in, step slides, stacked swipe deck, score bars filling, theme crossfade. All of it switches off with `prefers-reduced-motion` |
 
 ## 6. What the frontend needs from the API
 
