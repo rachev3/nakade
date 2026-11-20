@@ -11,7 +11,8 @@
     "saved": "Saved",
     "home": "Home",
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "map": "Map"
   },
   "theme": {
     "light": "Light",
@@ -174,6 +175,152 @@
       "compromises": {
         "title": "What could you compromise on?",
         "hint": "These count less in your matches"
+      },
+      "origin": {
+        "title": "Where are you moving from?",
+        "hint": "The oblast centre closest to your current home",
+        "options": {
+          "10135": "Varna",
+          "10447": "Veliko Tarnovo",
+          "10971": "Vidin",
+          "12259": "Vratsa",
+          "14218": "Gabrovo",
+          "40909": "Kardzhali",
+          "41112": "Kyustendil",
+          "43952": "Lovech",
+          "48489": "Montana",
+          "55155": "Pazardzhik",
+          "55871": "Pernik",
+          "56722": "Pleven",
+          "56784": "Plovdiv",
+          "61710": "Razgrad",
+          "63427": "Ruse",
+          "66425": "Silistra",
+          "67338": "Sliven",
+          "67653": "Smolyan",
+          "68134": "Sofia",
+          "68850": "Stara Zagora",
+          "72624": "Dobrich",
+          "73626": "Targovishte",
+          "77195": "Haskovo",
+          "83510": "Shumen",
+          "87374": "Yambol",
+          "07079": "Burgas",
+          "04279": "Blagoevgrad"
+        }
+      },
+      "homeDistance": {
+        "title": "How far from your current home are you willing to live?",
+        "hint": "Driving time. Places further away are set aside",
+        "options": {
+          "up_to_1h": "Up to 1 hour",
+          "up_to_2h": "Up to 2 hours",
+          "up_to_4h": "Up to 4 hours",
+          "any": "Doesn't matter"
+        }
+      },
+      "placeType": {
+        "title": "What kind of place do you picture?",
+        "options": {
+          "village": "Village",
+          "small_town": "Small town",
+          "city": "City",
+          "any": "Doesn't matter"
+        }
+      },
+      "buyBudget": {
+        "title": "Budget for buying a home",
+        "label": "EUR total",
+        "invalid": "Enter a number from 0 to 5,000,000"
+      },
+      "homeType": {
+        "title": "What kind of home?",
+        "options": {
+          "house": "House",
+          "apartment": "Apartment",
+          "either": "Either"
+        }
+      },
+      "officeDays": {
+        "title": "How many days a week are you in the office?",
+        "label": "Days (0–5)",
+        "invalid": "Enter a number from 0 to 5"
+      },
+      "internetNeeds": {
+        "title": "What do you need the internet for?",
+        "options": {
+          "basic": "Email and browsing",
+          "video_calls": "Daily video calls",
+          "heavy": "Large files, streaming, development"
+        }
+      },
+      "partnerJob": {
+        "title": "Will your partner look for a job there?",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "walkable": {
+        "title": "Do you want a shop, pharmacy and post office within walking distance?",
+        "yes": "Yes",
+        "no": "Not required"
+      },
+      "publicTransport": {
+        "title": "How often will you use public transport?",
+        "options": {
+          "daily": "Every day",
+          "sometimes": "Sometimes",
+          "never": "Never"
+        }
+      },
+      "sofiaTrips": {
+        "title": "How often will you go to Sofia?",
+        "options": {
+          "weekly": "Every week",
+          "monthly": "Every month",
+          "rarely": "Rarely"
+        }
+      },
+      "visitHome": {
+        "title": "How often will you go back to where you live now?",
+        "options": {
+          "weekly": "Every week",
+          "monthly": "Every month",
+          "rarely": "Rarely"
+        }
+      },
+      "cold": {
+        "title": "How do you handle cold winters?",
+        "options": {
+          "love_winter": "I love winter",
+          "fine": "No problem",
+          "prefer_mild": "I prefer a mild climate"
+        }
+      },
+      "heating": {
+        "title": "Do heating bills matter to you?",
+        "yes": "Yes",
+        "no": "Not really"
+      },
+      "goingOut": {
+        "title": "How often do you go out (restaurants, cinema, theatre)?",
+        "options": {
+          "often": "Often",
+          "sometimes": "Sometimes",
+          "rarely": "Rarely"
+        }
+      },
+      "pets": {
+        "title": "Do you have a pet?",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "depopulation": {
+        "title": "Does it matter that the place isn't shrinking?",
+        "options": {
+          "important": "A lot",
+          "somewhat": "Somewhat",
+          "not_important": "No"
+        }
       }
     }
   },
@@ -184,7 +331,8 @@
     "amenities": "Everyday amenities",
     "nature": "Nature",
     "employment": "Work",
-    "demographics": "Community & growth"
+    "demographics": "Community & growth",
+    "housing": "Housing"
   },
   "discover": {
     "title": "Discover",
@@ -244,7 +392,8 @@
     "train_to_sofia": "No train to Sofia",
     "fast_internet": "Fast internet is not widely available",
     "pharmacy": "No pharmacy nearby",
-    "kindergarten": "No kindergarten places"
+    "kindergarten": "No kindergarten places",
+    "max_home_distance": "Too far from your current home"
   },
   "metric": {
     "drive_min_to_sofia": "Drive to Sofia",
@@ -259,7 +408,50 @@
     "forest_share_pct": "Forest around",
     "unemployment_rate_pct": "Unemployment",
     "job_ads_per_1000": "Job ads per 1000 people",
-    "median_age": "Median age"
+    "median_age": "Median age",
+    "drive_min_to_oblast_centre": "Drive to the oblast centre",
+    "drive_km_to_oblast_centre": "Km to the oblast centre",
+    "drive_min_to_current_location": "Drive to your current home",
+    "bus_stop_nearest_km": "Nearest bus stop",
+    "bus_stop_count": "Bus stops",
+    "train_station_nearest_km": "Nearest train station",
+    "train_station_count": "Train stations",
+    "hospital_nearest_km": "Nearest hospital",
+    "hospital_count": "Hospitals",
+    "doctor_nearest_km": "Nearest doctor",
+    "doctor_count": "Doctors",
+    "pharmacy_nearest_km": "Nearest pharmacy",
+    "pharmacy_count": "Pharmacies",
+    "school_nearest_km": "Nearest school",
+    "school_count": "Schools",
+    "kindergarten_nearest_km": "Nearest kindergarten",
+    "kindergarten_count": "Kindergartens",
+    "shop_nearest_km": "Nearest shop",
+    "shop_count": "Shops",
+    "post_office_nearest_km": "Nearest post office",
+    "post_office_count": "Post offices",
+    "food_drink_nearest_km": "Nearest café or restaurant",
+    "food_drink_count": "Cafés and restaurants",
+    "culture_nearest_km": "Nearest cultural venue",
+    "culture_count": "Cultural venues",
+    "vet_nearest_km": "Nearest vet",
+    "vet_count": "Vets",
+    "internet_fixed_down_mbps": "Fixed internet",
+    "internet_mobile_down_mbps": "Mobile internet",
+    "forest_nearest_km": "Nearest forest",
+    "water_nearest_km": "Nearest river or lake",
+    "protected_nearest_km": "Nearest protected area",
+    "elevation_m": "Elevation",
+    "jan_mean_temp_c": "Mean January temperature",
+    "heating_vs_sofia_pct": "Heating vs Sofia",
+    "unemployment_change_pp": "Change in unemployment",
+    "vacancies_per_100_unemployed": "Vacancies per 100 unemployed",
+    "population_2021": "Population (2021)",
+    "population_2011": "Population (2011)",
+    "population_trend_pct": "Population change",
+    "rent_2room_eur_month": "2-room flat rent",
+    "apartment_sale_eur_m2": "Apartment price per m²",
+    "house_sale_eur": "House price"
   },
   "fact": {
     "verified": "Verified",
@@ -315,12 +507,36 @@
   },
   "unit": {
     "min": "min",
-    "years": "years"
+    "years": "years",
+    "km": "km",
+    "m": "m",
+    "pp": "pp",
+    "eurMonth": "EUR/month"
   },
   "profileMode": {
     "title": "How well should we get to know you?",
-    "quick": "5 questions, about a minute. Good enough to start.",
-    "detailed": "Up to 13 questions, about 3 minutes. Sharper matches.",
+    "quick": "10 questions, about 2 minutes. Good enough to start.",
+    "detailed": "Up to 30 questions, about 6 minutes. The sharpest matches.",
     "note": "You can switch from Quick to Detailed at any time without losing anything."
+  },
+  "map": {
+    "heading": "Map of your matches",
+    "intro": "{{count}} places, coloured by how well they fit you. Click a pin for more.",
+    "introNoProfile": "Take the quick profile and we'll colour the places by how well they fit you.",
+    "startProfile": "Start the quick profile",
+    "top": "Top 10",
+    "legend": "Legend",
+    "fit": "{{value}}% match",
+    "open": "Open the place →",
+    "title": "Map: {{name}}",
+    "region": "Interactive map",
+    "needsKey": "To see all places on the map, add a Google Maps API key in apps/web/.env.local (VITE_GOOGLE_MAPS_API_KEY).",
+    "band": {
+      "great": "85%+",
+      "good": "70–84%",
+      "ok": "55–69%",
+      "weak": "below 55%",
+      "excluded": "Fails a must-have"
+    }
   }
 }

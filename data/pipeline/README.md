@@ -102,3 +102,24 @@ python3 data/pipeline/fetch_images.py
 - OSM completeness varies: a missing amenity in a village may be unmapped rather than absent.
 - Ookla data is crowd-sourced; rows with few `_tests` are noisy. Licence is non-commercial (CC BY-NC-SA).
 - OSRM demo server is fine for 90 rows; use a self-hosted OSRM for anything bigger.
+
+## Enrichment and MongoDB
+
+`enrich-settlements.mjs` (Node 22, no Python) adds census population 2011/2021 (НСИ), municipal
+unemployment 2025 (Агенция по заетостта) and housing medians (terramap.bg listings) to the 90 rows and
+writes every value as an API-contract `Fact` (`status`, `method`, `source`, `retrieved_at`) to
+`data/processed/settlements_enriched.json`. Its inputs live in `csv/` (not in git).
+
+`seed-mongo.mjs` writes those 90 settlements to MongoDB (`settlements`, `_id` = EKATTE). The database
+holds nothing else. Copy `env.example` to `.env` (gitignored) with the Atlas connection string first.
+
+```powershell
+cd data/pipeline
+npm install
+npm run enrich     # → data/processed/settlements_enriched.json
+npm run seed       # → MongoDB `settlements` (90 docs)
+```
+
+Housing: a median needs at least 5 listings. Listings exist only for oblast centres, so the 60 nearby
+settlements and 5 cities (Асеновград, Димитровград, Казанлък, Горна Оряховица, Дупница) get the nearest
+city's median, marked `estimated`.

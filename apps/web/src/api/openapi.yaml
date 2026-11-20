@@ -293,6 +293,26 @@ components:
         connections:
           { type: [string, 'null'], description: 'Places with important people (free text)' }
         compromises: { type: array, items: { $ref: '#/components/schemas/Dimension' } }
+        # added with the 10 (quick) / 30 (detailed) question onboarding
+        max_home_distance:
+          type: string
+          enum: [up_to_1h, up_to_2h, up_to_4h, any]
+          description: 'Hard limit on drive time to current_location'
+        place_type: { type: string, enum: [village, small_town, city, any] }
+        buy_budget_eur: { type: [integer, 'null'], description: 'Total budget when housing = buy' }
+        home_type: { type: string, enum: [house, apartment, either] }
+        office_days: { type: [integer, 'null'], minimum: 0, maximum: 5 }
+        internet_needs: { type: string, enum: [basic, video_calls, heavy] }
+        partner_job: { type: boolean }
+        walkable: { type: boolean }
+        public_transport: { type: string, enum: [daily, sometimes, never] }
+        sofia_trips: { type: string, enum: [weekly, monthly, rarely] }
+        visit_home: { type: string, enum: [weekly, monthly, rarely] }
+        cold_tolerance: { type: string, enum: [love_winter, fine, prefer_mild] }
+        heating_costs: { type: boolean }
+        going_out: { type: string, enum: [often, sometimes, rarely] }
+        pets: { type: boolean }
+        depopulation: { type: string, enum: [important, somewhat, not_important] }
 
     Completeness:
       type: string
