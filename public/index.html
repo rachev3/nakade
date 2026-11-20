@@ -3,23 +3,359 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>nakade</title>
+  <title>nakade — find your place in Bulgaria</title>
   <meta name="description" content="Discover your place. Try your life there. Plan your move.">
   <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141815" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="nakade">
+  <meta property="og:title" content="nakade — find your place in Bulgaria">
+  <meta property="og:description" content="Discover your place. Try your life there. Plan your move.">
+  <meta property="og:image" content="https://nakade.app/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" as="image" href="/img/hero-1536.webp" imagesrcset="/img/hero-800.webp 800w, /img/hero-1536.webp 1536w" imagesizes="100vw" fetchpriority="high">
   <style>
-    :root { color-scheme: light dark; }
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: system-ui, sans-serif; background: #f6f4ef; color: #1f2a24; }
-    @media (prefers-color-scheme: dark) { body { background: #141815; color: #e8ebe6; } }
-    main { text-align: center; padding: 16px; }
-    h1 { font-size: 2.5rem; margin: 0 0 .5rem; letter-spacing: -.02em; }
-    p { margin: 0; opacity: .75; }
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f4ef;
+      --surface: #fffdf8;
+      --ink: #1f2a24;
+      --muted: #5b675f;
+      --line: #e3ded2;
+      --green: #2f5d46;
+      --green-soft: #e4ece4;
+      --clay: #b4532f;
+      --clay-soft: #f6e5da;
+      --scenario: #f3ece0;
+      --shadow: 0 1px 2px rgb(31 42 36 / .06), 0 8px 24px rgb(31 42 36 / .08);
+      --radius: 20px;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #141815; --surface: #1c221e; --ink: #e8ebe6; --muted: #a3ada6; --line: #2c342f;
+        --green: #8cc3a3; --green-soft: #22312a; --clay: #e48a66; --clay-soft: #3a2a22; --scenario: #262a24;
+        --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .35);
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #141815; --surface: #1c221e; --ink: #e8ebe6; --muted: #a3ada6; --line: #2c342f;
+      --green: #8cc3a3; --green-soft: #22312a; --clay: #e48a66; --clay-soft: #3a2a22; --scenario: #262a24;
+      --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .35);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; }
+    h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.015em; line-height: 1.1; margin: 0; text-wrap: balance; }
+    p { margin: 0; }
+    a { color: inherit; }
+    .wrap { width: min(1120px, 100% - 32px); margin-inline: auto; }
+    .eyebrow { font-size: .78rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--clay); }
+    section { padding-block: clamp(64px, 9vw, 112px); }
+    .section-head { max-width: 640px; margin-bottom: 36px; }
+    .section-head h2 { font-size: clamp(2rem, 4.4vw, 2.9rem); margin-top: 10px; }
+    .section-head p { color: var(--muted); margin-top: 14px; font-size: 1.08rem; }
+
+    /* ---------- Header ---------- */
+    .top { position: absolute; inset: 0 0 auto; z-index: 3; }
+    .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+    .brand { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; text-decoration: none; color: #1f2a24; letter-spacing: -.02em; }
+    .brand span { color: #b4532f; }
+    .top nav { display: flex; gap: 22px; font-size: .95rem; }
+    .top nav a { text-decoration: none; color: #1f2a24; opacity: .8; }
+    .top nav a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 4px; }
+    @media (max-width: 640px) { .top nav { display: none; } }
+
+    /* ---------- Hero ---------- */
+    .hero { position: relative; min-height: min(92vh, 860px); display: flex; color: #1f2a24; overflow: hidden; padding: 0; }
+    .hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 38% 70%; }
+    .hero::before {
+      content: ""; position: absolute; inset: 0; z-index: 1;
+      background:
+        linear-gradient(90deg, rgb(246 244 239 / .9) 0%, rgb(246 244 239 / .7) 32%, rgb(246 244 239 / 0) 62%),
+        linear-gradient(180deg, rgb(246 244 239 / .6) 0%, rgb(246 244 239 / 0) 40%);
+    }
+    .hero::after { content: ""; position: absolute; inset: auto 0 0; height: 120px; z-index: 1; background: linear-gradient(transparent, var(--bg)); }
+    .hero-copy { position: relative; z-index: 2; padding-top: clamp(112px, 16vh, 168px); max-width: 620px; }
+    .hero h1 { font-size: clamp(2.5rem, 6.4vw, 4.4rem); }
+    .hero p { font-size: clamp(1.05rem, 1.6vw, 1.2rem); margin-top: 18px; max-width: 480px; color: #2c3a32; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; border-radius: 999px; font-weight: 600; font-size: .98rem; text-decoration: none; border: 1px solid transparent; transition: transform .15s ease, background .15s ease; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: #2f5d46; color: #fff; }
+    .btn-primary:hover { background: #264d3a; }
+    .btn-ghost { background: rgb(255 253 248 / .78); color: #1f2a24; border-color: rgb(31 42 36 / .14); backdrop-filter: blur(6px); }
+    @media (max-width: 640px) {
+      .hero { min-height: 0; flex-direction: column-reverse; color: var(--ink); }
+      .hero > img { position: relative; height: auto; aspect-ratio: 5 / 4; object-position: 42% 78%;
+        -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 80%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 80%, transparent); }
+      .hero::before, .hero::after { display: none; }
+      .hero-copy { padding-top: 96px; padding-bottom: 8px; }
+      .hero p { color: var(--muted); }
+      .btn-ghost { background: var(--surface); color: var(--ink); border-color: var(--line); }
+      .brand { color: var(--ink); }
+      .brand span { color: var(--clay); }
+    }
+
+    /* ---------- Steps ---------- */
+    .steps { padding-block: 8px 0; }
+    .steps ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: step; }
+    .steps li { counter-increment: step; padding: 20px 22px; border-top: 2px solid var(--line); }
+    .steps li::before { content: "0" counter(step); font-family: var(--serif); color: var(--clay); font-size: 1rem; font-weight: 700; }
+    .steps strong { display: block; font-family: var(--serif); font-size: 1.3rem; margin: 6px 0 4px; }
+    .steps span { color: var(--muted); font-size: .96rem; }
+    @media (max-width: 760px) { .steps ol { grid-template-columns: 1fr; gap: 0; } }
+
+    /* ---------- Journeys ---------- */
+    .journeys { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 760px) { .journeys { grid-template-columns: 1fr; } }
+    .journey { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; transition: transform .2s ease, box-shadow .2s ease; }
+    .journey:hover { transform: translateY(-3px); }
+    .journey figure { margin: 0; aspect-ratio: 4 / 3; overflow: hidden; }
+    .journey figure img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; transition: transform .6s ease; }
+    .journey:hover figure img { transform: scale(1.03); }
+    .journey-body { padding: 24px 26px 26px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .journey h3 { font-size: 1.65rem; }
+    .journey p { color: var(--muted); }
+    .journey .example { font-style: italic; color: var(--ink); opacity: .85; font-size: .96rem; }
+    .journey .go { margin-top: auto; padding-top: 10px; font-weight: 600; color: var(--green); display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+    .soon { white-space: nowrap; }
+    .soon { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--green-soft); color: var(--green); }
+
+    /* ---------- Try a day ---------- */
+    .try { background: var(--surface); border-block: 1px solid var(--line); }
+    .try-head { display: flex; flex-wrap: wrap; gap: 20px 32px; align-items: end; justify-content: space-between; margin-bottom: 32px; }
+    .try-head .section-head { margin-bottom: 0; }
+    .switch { display: inline-flex; padding: 4px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); }
+    .switch button { font: inherit; font-size: .92rem; font-weight: 600; border: 0; background: none; color: var(--muted); padding: 9px 16px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+    .switch button[aria-pressed="true"] { background: var(--green); color: var(--surface); }
+    .switch button:focus-visible, .btn:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
+    @media (max-width: 420px) { .switch button { padding: 9px 12px; font-size: .86rem; } }
+
+    .day { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    @media (max-width: 900px) {
+      .day { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: min(72%, 280px); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; margin-inline: -16px; padding-inline: 16px; scroll-padding-inline: 16px; scrollbar-width: none; }
+      .day::-webkit-scrollbar { display: none; }
+    }
+    .scene { margin: 0; scroll-snap-align: start; position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 2 / 3; background: var(--scenario); box-shadow: var(--shadow); }
+    .scene img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: opacity .35s ease; }
+    .scene.loading img { opacity: .25; }
+    .scene .tag { position: absolute; top: 12px; left: 12px; font-size: .72rem; font-weight: 600; letter-spacing: .04em; padding: 4px 10px; border-radius: 999px; background: rgb(255 253 248 / .88); color: #1f2a24; backdrop-filter: blur(4px); }
+    .scene .tag::before { content: "✦ "; color: #b4532f; }
+    .scene figcaption { position: absolute; inset: auto 0 0; padding: 48px 16px 16px; color: #fff; background: linear-gradient(transparent, rgb(20 24 21 / .82)); }
+    .scene time { font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
+    .scene strong { display: block; font-family: var(--serif); font-size: 1.25rem; margin: 2px 0 4px; }
+    .scene span { font-size: .9rem; font-style: italic; opacity: .92; line-height: 1.4; display: block; }
+
+    .note { margin-top: 24px; display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px; border-radius: 14px; background: var(--scenario); color: var(--ink); font-size: .95rem; max-width: 760px; }
+    .note b { color: var(--clay); }
+
+    /* ---------- Plan ---------- */
+    .plan { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(28px, 5vw, 64px); align-items: center; }
+    @media (max-width: 860px) { .plan { grid-template-columns: 1fr; } }
+    .plan figure { margin: 0; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); aspect-ratio: 3 / 2; }
+    .plan figure img { width: 100%; height: 100%; object-fit: cover; }
+    .plan .section-head { margin-bottom: 22px; }
+    .checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .checklist li { display: flex; gap: 14px; align-items: center; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+    .checklist .box { flex: none; width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; font-size: .8rem; font-weight: 800; line-height: 1; }
+    .checklist .done .box { background: var(--green); border-color: var(--green); color: var(--surface); }
+    .checklist .done .label { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+    .checklist small { margin-left: auto; color: var(--muted); font-size: .82rem; white-space: nowrap; }
+
+    /* ---------- Footer ---------- */
+    footer { border-top: 1px solid var(--line); padding-block: 36px 48px; color: var(--muted); font-size: .9rem; }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: space-between; }
+    footer .brand { color: var(--ink); font-size: 1.25rem; }
+    footer .brand span { color: var(--clay); }
   </style>
 </head>
 <body>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="/">nakade<span>.</span></a>
+      <nav aria-label="Main">
+        <a href="#start">Start</a>
+        <a href="#try">Try a day</a>
+        <a href="#plan">Plan your move</a>
+      </nav>
+    </div>
+  </header>
+
   <main>
-    <h1>nakade</h1>
-    <p>Discover your place. Try your life there. Plan your move.</p>
-    <p style="margin-top:1rem;font-size:.9rem">Coming soon.</p>
+    <section class="hero" aria-labelledby="hero-title">
+      <img src="/img/hero-1536.webp" srcset="/img/hero-800.webp 800w, /img/hero-1536.webp 1536w" sizes="100vw" width="1536" height="1024" fetchpriority="high"
+           alt="A person with a backpack stands on a winding road that leads from city apartment blocks, through orchards, to a mountain village with red-tiled roofs.">
+      <div class="wrap">
+        <div class="hero-copy">
+          <h1 id="hero-title">Find where your life fits in Bulgaria.</h1>
+          <p>Tell us how you want to live. We match you with cities, towns and villages using real public data, let you try a day there, then help you plan the move.</p>
+          <div class="cta">
+            <a class="btn btn-primary" href="#start">Find my place <span aria-hidden="true">→</span></a>
+            <a class="btn btn-ghost" href="#try">Try a day first</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="steps" aria-label="How it works">
+      <div class="wrap">
+        <ol>
+          <li><strong>Discover your place</strong><span>Swipe through places that match your life, not a spreadsheet of statistics.</span></li>
+          <li><strong>Try your life there</strong><span>Walk through an ordinary day: the morning, the commute, the school run, the weekend.</span></li>
+          <li><strong>Plan your move</strong><span>Get a checklist that fits your situation, from housing to registering with a GP.</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="start" aria-labelledby="start-title">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Two ways in</span>
+          <h2 id="start-title">Where are you starting from?</h2>
+        </div>
+        <div class="journeys">
+          <article class="journey">
+            <figure>
+              <img src="/img/journey-know-800.webp" srcset="/img/journey-know-480.webp 480w, /img/journey-know-800.webp 800w" sizes="(max-width: 760px) 100vw, 540px" width="800" height="800" loading="lazy"
+                   alt="A person on a hilltop holds a map with one pin, looking at a small town glowing in the valley.">
+            </figure>
+            <div class="journey-body">
+              <h3>I already know where</h3>
+              <p>Pick where you live now and where you're thinking of moving. See how well it fits, what you'd gain and what you'd give up.</p>
+              <p class="example">“I live in Sofia and want to move to Tryavna.”</p>
+              <div class="go">Check my destination <span class="soon">Coming soon</span></div>
+            </div>
+          </article>
+          <article class="journey">
+            <figure>
+              <img src="/img/journey-discover-800.webp" srcset="/img/journey-discover-480.webp 480w, /img/journey-discover-800.webp 800w" sizes="(max-width: 760px) 100vw, 540px" width="800" height="800" loading="lazy"
+                   alt="A person with a compass stands at a crossroads, with paths leading to a mountain village, a river town, a lake and a city.">
+            </figure>
+            <div class="journey-body">
+              <h3>Help me find my place</h3>
+              <p>Describe the life you want. We suggest places that fit, and you swipe through them like postcards from possible futures.</p>
+              <p class="example">“Somewhere peaceful near nature, but with a doctor and a school close by.”</p>
+              <div class="go">Start discovering <span class="soon">Coming soon</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="try" class="try" aria-labelledby="try-title">
+      <div class="wrap">
+        <div class="try-head">
+          <div class="section-head">
+            <span class="eyebrow">Try your new life</span>
+            <h2 id="try-title">Spend a day there before you move.</h2>
+            <p>Every place feels different from morning to evening. Pick a kind of place and walk through an ordinary day.</p>
+          </div>
+          <div class="switch" role="group" aria-label="Kind of place">
+            <button type="button" data-setting="village" aria-pressed="true">Mountain village</button>
+            <button type="button" data-setting="town" aria-pressed="false">Historic town</button>
+            <button type="button" data-setting="city" aria-pressed="false">City</button>
+          </div>
+        </div>
+
+        <ol class="day" aria-live="polite">
+          <li><figure class="scene" data-scene="morning"><img width="480" height="720" alt=""><span class="tag">Imagined</span><figcaption><time>07:30</time><strong>Morning</strong><span></span></figcaption></figure></li>
+          <li><figure class="scene" data-scene="commute"><img width="480" height="720" alt="" loading="lazy"><span class="tag">Imagined</span><figcaption><time>08:15</time><strong>Getting to work</strong><span></span></figcaption></figure></li>
+          <li><figure class="scene" data-scene="weekend-nature"><img width="480" height="720" alt="" loading="lazy"><span class="tag">Imagined</span><figcaption><time>Saturday</time><strong>Out in nature</strong><span></span></figcaption></figure></li>
+          <li><figure class="scene" data-scene="evening"><img width="480" height="720" alt="" loading="lazy"><span class="tag">Imagined</span><figcaption><time>19:30</time><strong>Evening</strong><span></span></figcaption></figure></li>
+        </ol>
+
+        <p class="note"><span aria-hidden="true">✦</span><span><b>Imagined scenes</b> are marked like this. When you try a real place, travel times, schools, doctors and shops come from public data, with the source shown. Where we don't have reliable data, we say so.</span></p>
+      </div>
+    </section>
+
+    <section id="plan" aria-labelledby="plan-title">
+      <div class="wrap plan">
+        <figure>
+          <img src="/img/plan-1280.webp" srcset="/img/plan-800.webp 800w, /img/plan-1280.webp 1280w" sizes="(max-width: 860px) 100vw, 600px" width="1280" height="853" loading="lazy"
+               alt="Moving boxes, a potted geranium, a house key and a checklist on a wooden floor, with green hills outside the window.">
+        </figure>
+        <div>
+          <div class="section-head">
+            <span class="eyebrow">Plan your move</span>
+            <h2 id="plan-title">From “I want to live there” to “here's how.”</h2>
+            <p>Once you've chosen, you get a step-by-step plan built around your household, work and needs.</p>
+          </div>
+          <ul class="checklist" aria-label="Example relocation checklist">
+            <li class="done"><span class="box" aria-hidden="true">✓</span><span class="label">Choose your new place</span></li>
+            <li class="done"><span class="box" aria-hidden="true">✓</span><span class="label">Compare rent and housing options</span></li>
+            <li><span class="box" aria-hidden="true"></span><span class="label">Change your registered address</span><small>Admin</small></li>
+            <li><span class="box" aria-hidden="true"></span><span class="label">Register with a local GP</span><small>Health</small></li>
+            <li><span class="box" aria-hidden="true"></span><span class="label">Enrol the kids in school</span><small>Education</small></li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer>
+    <div class="wrap">
+      <a class="brand" href="/">nakade<span>.</span></a>
+      <p>Starting with Bulgaria. Illustrations are imagined; place facts come from public data.</p>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const copy = {
+        village: {
+          morning: ["Coffee by the window, mist still on the hills.", "Morning coffee looking out over a mountain village at sunrise."],
+          commute: ["The regional bus, or a quiet road into town.", "A man with a backpack waits at a village bus stop as a bus arrives, mountains behind."],
+          "weekend-nature": ["A trail starts at the end of your street.", "A family hikes a mountain trail beside a stream."],
+          evening: ["Neighbours on the bench in the square.", "Older neighbours chat on a bench in a cobbled village square at dusk."]
+        },
+        town: {
+          morning: ["Cobbled lanes and tiled roofs at sunrise.", "Morning coffee at a window overlooking a cobbled lane and tiled roofs at sunrise."],
+          commute: ["A short walk, or a bus along the main street.", "A man waits at a bus stop on a cobbled street as a bus arrives, a bell tower behind."],
+          "weekend-nature": ["Hills and river a short drive away.", "A family hikes a hillside path above a river gorge."],
+          evening: ["Lanterns, cafés and a bench to share.", "Three neighbours sit on a bench on a lantern-lit cobbled street at dusk."]
+        },
+        city: {
+          morning: ["Balcony coffee above a tree-lined street.", "Morning coffee on a city apartment window sill, trees and blocks below."],
+          commute: ["City bus, metro, or a bike lane.", "A man with headphones waits at a city bus stop as a blue bus pulls in."],
+          "weekend-nature": ["Mountain and lake within an hour.", "A family hikes toward a lake in the hills outside a city."],
+          evening: ["Fountains, parks and city lights.", "An older couple on a park bench by a lit fountain, apartment blocks behind, at dusk."]
+        }
+      };
+      const buttons = document.querySelectorAll(".switch button");
+      const scenes = document.querySelectorAll(".scene");
+      const src = (scene, setting) => `/img/day/${scene}-${setting}-480.webp`;
+
+      function show(setting) {
+        buttons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.setting === setting)));
+        scenes.forEach(fig => {
+          const img = fig.querySelector("img");
+          const [caption, alt] = copy[setting][fig.dataset.scene];
+          const next = src(fig.dataset.scene, setting);
+          fig.querySelector("figcaption span").textContent = caption;
+          if (img.getAttribute("src") === next) return;
+          fig.classList.add("loading");
+          const done = () => { img.alt = alt; fig.classList.remove("loading"); };
+          img.addEventListener("load", done, { once: true });
+          img.addEventListener("error", done, { once: true });
+          img.src = next;
+        });
+      }
+
+      buttons.forEach(b => b.addEventListener("click", () => show(b.dataset.setting)));
+      show("village");
+
+      // Warm the other settings once the page is idle so switching feels instant.
+      const warm = () => ["town", "city"].forEach(s => scenes.forEach(f => { new Image().src = src(f.dataset.scene, s); }));
+      if ("requestIdleCallback" in window) requestIdleCallback(warm, { timeout: 3000 }); else setTimeout(warm, 2000);
+    })();
+  </script>
 </body>
 </html>
