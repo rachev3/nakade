@@ -9,7 +9,7 @@ import {
 } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import type { Match, SwipeAction } from '@/api/types'
-import { Landscape } from '@/components/Landscape'
+import { SettlementPhoto } from '@/components/SettlementPhoto'
 import { PlaceHeading } from '@/components/PlaceHeading'
 import { percent, placeName } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -121,9 +121,8 @@ function CardBody({ match }: { match: Match }) {
   const { t } = useTranslation()
   return (
     <>
-      {/* Illustration until we have licensed photos */}
       <div className="relative h-44 shrink-0">
-        <Landscape seed={match.ekatte} type={match.settlement.type} />
+        <SettlementPhoto ekatte={match.ekatte} type={match.settlement.type} linkCredit={false} />
         <span className="absolute bottom-3 left-4 rounded-full bg-card px-3 py-1 text-sm font-semibold">
           {t('discover.fit', { score: percent(match.score) })}
         </span>

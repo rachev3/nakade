@@ -10,7 +10,7 @@ import { Link, useParams } from 'react-router'
 import { useMatches, useRecordSwipe, useSaved, useSettlement } from '@/api/queries'
 import type { Dimension, Fact as FactData } from '@/api/types'
 import { Fact } from '@/components/Fact'
-import { Landscape } from '@/components/Landscape'
+import { SettlementPhoto } from '@/components/SettlementPhoto'
 import { MapView } from '@/components/MapView'
 import { PlaceHeading } from '@/components/PlaceHeading'
 import { ScoreBar } from '@/components/ScoreBar'
@@ -44,8 +44,8 @@ export default function PlacePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="-mx-4 -mt-6 h-40 overflow-hidden sm:mx-0 sm:mt-0 sm:h-52 sm:rounded-3xl">
-        <Landscape seed={place.ekatte} type={place.type} />
+      <div className="-mx-4 -mt-6 h-56 overflow-hidden sm:mx-0 sm:mt-0 sm:h-72 sm:rounded-3xl">
+        <SettlementPhoto ekatte={place.ekatte} type={place.type} eager />
       </div>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2">
