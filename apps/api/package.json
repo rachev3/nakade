@@ -1,0 +1,12 @@
+{
+  "name": "@nakade/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "match": "node --env-file-if-exists=../../data/pipeline/.env --env-file-if-exists=.env scripts/match.mjs",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "mongodb": "~7.8.0"
+  }
+}
