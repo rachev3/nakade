@@ -5,8 +5,19 @@
   "assets": {
     "directory": "./public"
   },
+  "observability": { "enabled": true },
+  // production: deployed from main by Workers Builds (`npx wrangler deploy`)
   "routes": [
     { "pattern": "nakade.app", "custom_domain": true },
     { "pattern": "www.nakade.app", "custom_domain": true }
-  ]
+  ],
+  "env": {
+    // dev: deployed from dev by Workers Builds (`npx wrangler deploy --env dev`)
+    "dev": {
+      "name": "nakade-dev",
+      "routes": [
+        { "pattern": "dev.nakade.app", "custom_domain": true }
+      ]
+    }
+  }
 }
