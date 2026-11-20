@@ -2,12 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "nakade",
   "compatibility_date": "2026-11-01",
-  // Static SPA: Vite builds into dist/. Unknown paths fall back to index.html so React Router
-  // can handle them. Later this Worker also proxies /api/* to the backend (see docs/frontend.md).
+  // /api/* runs the API (worker.js → apps/api/src/worker.js). Everything else is the static SPA:
+  // Vite builds into dist/, unknown paths fall back to index.html so React Router can handle them.
+  "main": "./worker.js",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
   },
+  // Production has no DB binding yet, so /api/* answers 503 there and the site stays on mock data.
   "observability": { "enabled": true },
   // production: deployed from main by Workers Builds (`npx wrangler deploy`)
   "routes": [
@@ -20,6 +24,10 @@
     "dev": {
       "name": "nakade-dev",
       "routes": [{ "pattern": "dev.nakade.app", "custom_domain": true }],
+      // Anonymous sessions (profile, swipes). Settlements are bundled JSON, so no DB credentials exist.
+      "d1_databases": [{ "binding": "DB", "database_name": "nakade-dev", "database_id": "211b508e-58c6-4fce-b322-aa6eadd0b191" }],
+      // 120 API requests per minute per IP. namespace_id is any account-unique integer.
+      "ratelimits": [{ "name": "API_LIMITER", "namespace_id": "1001", "simple": { "limit": 120, "period": 60 } }],
     },
   },
 }
