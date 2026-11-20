@@ -217,7 +217,8 @@
     "alternatives": "See alternatives",
     "excludedBecause": "Set aside because:",
     "noScore": "Not enough data",
-    "weight": "weight {{value}}%"
+    "weight": "weight {{value}}%",
+    "noScoreShort": "no data"
   },
   "reason": {
     "transport": "Good transport links",

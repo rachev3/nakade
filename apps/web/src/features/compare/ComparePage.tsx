@@ -18,7 +18,7 @@ export default function ComparePage() {
   if (ids.length === 0)
     return (
       <div className="flex flex-col items-start gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight">{t('compare.title')}</h1>
+        <h1 className="text-3xl sm:text-4xl">{t('compare.title')}</h1>
         <p className="text-muted-foreground">{t('compare.empty')}</p>
         <Button asChild>
           <Link to="/saved">{t('nav.saved')}</Link>
@@ -36,7 +36,7 @@ export default function ComparePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-semibold tracking-tight">{t('compare.title')}</h1>
+      <h1 className="text-3xl sm:text-4xl">{t('compare.title')}</h1>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[32rem] text-sm">
           <thead>

@@ -57,7 +57,7 @@ export default function StartDiscoverPage() {
 
   return (
     <form onSubmit={onSubmit} className="mx-auto flex max-w-xl flex-col gap-6" noValidate>
-      <h1 className="text-3xl font-semibold tracking-tight">{t('startDiscover.title')}</h1>
+      <h1 className="text-3xl sm:text-4xl">{t('startDiscover.title')}</h1>
       <div className="space-y-2">
         <Label htmlFor="text">{t('startDiscover.textLabel')}</Label>
         <Textarea

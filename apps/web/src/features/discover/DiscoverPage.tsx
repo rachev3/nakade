@@ -70,7 +70,7 @@ export default function DiscoverPage() {
         </Button>
       )}
 
-      <div className="relative h-[30rem]" aria-live="polite">
+      <div className="relative h-[33rem]" aria-live="polite">
         <AnimatePresence custom={exitDirection}>
           {top ? (
             <SwipeCard key={top.ekatte} match={top} onSwipe={act} exitDirection={exitDirection} />
@@ -91,12 +91,12 @@ export default function DiscoverPage() {
             <Button
               variant="outline"
               size="icon"
-              className="size-14 rounded-full"
+              className="size-16 rounded-full border-2 border-dislike/50 hover:bg-dislike/10"
               aria-label={t('discover.dislike')}
               aria-keyshortcuts="ArrowLeft"
               onClick={() => act('dislike')}
             >
-              <XIcon className="size-6 text-dislike" />
+              <XIcon className="size-7 text-dislike" />
             </Button>
             <Button
               variant="outline"
@@ -120,14 +120,13 @@ export default function DiscoverPage() {
               </Link>
             </Button>
             <Button
-              variant="outline"
               size="icon"
-              className="size-14 rounded-full"
+              className="size-16 rounded-full"
               aria-label={t('discover.like')}
               aria-keyshortcuts="ArrowRight"
               onClick={() => act('like')}
             >
-              <HeartIcon className="size-6 text-like" />
+              <HeartIcon className="size-7" />
             </Button>
           </div>
           <p className="hidden text-center text-xs text-muted-foreground sm:block">

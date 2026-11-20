@@ -28,7 +28,7 @@ export default function SavedPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl font-semibold tracking-tight">{t('saved.title')}</h1>
+        <h1 className="text-3xl sm:text-4xl">{t('saved.title')}</h1>
         {saved.data.length > 1 &&
           (selected.length >= 2 ? (
             <Button asChild>

@@ -14,13 +14,7 @@ export function PlaceHeading({
   return (
     <div className="space-y-1">
       <div className="flex flex-wrap items-center gap-2">
-        <As
-          className={
-            As === 'h1' ? 'text-3xl font-semibold tracking-tight' : 'text-2xl font-semibold'
-          }
-        >
-          {placeName(place, i18n.language)}
-        </As>
+        <As className={As === 'h1' ? 'text-4xl' : 'text-3xl'}>{placeName(place, i18n.language)}</As>
         <Badge variant="outline">{t(`common.${place.type}`)}</Badge>
       </div>
       <p className="text-sm text-muted-foreground">

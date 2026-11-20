@@ -44,7 +44,7 @@ export function FitExplanation({
     <>
       {!match.passes_constraints && match.excluded_because && (
         <Card className="border-destructive/50">
-          <CardTitle className="flex items-center gap-2 text-lg text-destructive">
+          <CardTitle className="flex items-center gap-2 font-serif text-xl font-medium text-destructive">
             <OctagonAlertIcon aria-hidden className="size-5" />
             {t('place.excludedBecause')}
           </CardTitle>
@@ -52,17 +52,17 @@ export function FitExplanation({
         </Card>
       )}
       <Card>
-        <CardTitle className="text-lg">{t('place.why')}</CardTitle>
+        <CardTitle className="font-serif text-xl font-medium">{t('place.why')}</CardTitle>
         {list(match.reasons, <CheckIcon aria-hidden className="size-4 text-like" />)}
       </Card>
       {match.tradeoffs.length > 0 && (
         <Card>
-          <CardTitle className="text-lg">{t('place.tradeoffs')}</CardTitle>
+          <CardTitle className="font-serif text-xl font-medium">{t('place.tradeoffs')}</CardTitle>
           {list(match.tradeoffs, <MinusIcon aria-hidden className="size-4" />)}
         </Card>
       )}
       <Card>
-        <CardTitle className="text-lg">{t('place.unknowns')}</CardTitle>
+        <CardTitle className="font-serif text-xl font-medium">{t('place.unknowns')}</CardTitle>
         {match.unknowns.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t('place.noUnknowns')}</p>
         ) : (

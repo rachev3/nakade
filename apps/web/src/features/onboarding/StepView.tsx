@@ -112,7 +112,7 @@ export function StepView({
       className="flex flex-col gap-6"
     >
       <div className="space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+        <h2 className="text-2xl sm:text-3xl">{title}</h2>
         {hint && <p className="text-sm text-muted-foreground">{hint}</p>}
       </div>
 

@@ -28,7 +28,7 @@ export default function PlanPage() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
+        <h1 className="text-3xl sm:text-4xl">
           {t('plan.title', { place: placeName(settlement.data, i18n.language) })}
         </h1>
         <p className="text-muted-foreground">{t('plan.intro')}</p>
@@ -42,7 +42,9 @@ export default function PlanPage() {
       </div>
       {plan.data.sections.map((section) => (
         <Card key={section.key}>
-          <CardTitle className="text-lg">{t(`plan.sections.${section.key}`)}</CardTitle>
+          <CardTitle className="font-serif text-xl font-medium">
+            {t(`plan.sections.${section.key}`)}
+          </CardTitle>
           <ul className="space-y-3">
             {section.items.map((item) => {
               const id = `plan-${item.id}`

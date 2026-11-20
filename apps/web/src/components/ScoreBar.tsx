@@ -7,8 +7,10 @@ export function ScoreBar({ dimension }: { dimension: DimensionScore }) {
   const label = t(`dimension.${dimension.key}`)
   const value = dimension.score === null ? null : percent(dimension.score)
   return (
-    <div className="grid grid-cols-[minmax(0,9rem)_1fr_auto] items-center gap-3 text-sm">
-      <span className="truncate">{label}</span>
+    <div className="grid grid-cols-[7.5rem_1fr_4.5rem] items-center gap-3 text-sm sm:grid-cols-[10rem_1fr_5rem]">
+      <span className="truncate" title={label}>
+        {label}
+      </span>
       {value === null ? (
         <span className="h-2 rounded-full border border-dashed border-fact-missing" />
       ) : (
@@ -23,8 +25,8 @@ export function ScoreBar({ dimension }: { dimension: DimensionScore }) {
           <span className="block h-full rounded-full bg-primary" style={{ width: `${value}%` }} />
         </span>
       )}
-      <span className="w-24 text-right text-xs text-muted-foreground tabular-nums">
-        {value === null ? t('place.noScore') : `${value}%`}
+      <span className="text-right text-xs text-muted-foreground tabular-nums">
+        {value === null ? t('place.noScoreShort') : `${value}%`}
       </span>
     </div>
   )

@@ -22,7 +22,7 @@ export function RootLayout() {
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      'inline-flex min-h-10 items-center gap-1.5 rounded-md px-3 text-sm',
+      'inline-flex size-9 items-center justify-center gap-1.5 rounded-full text-sm sm:size-auto sm:min-h-10 sm:px-3',
       isActive ? 'bg-accent font-medium' : 'text-muted-foreground hover:text-foreground',
     )
 
@@ -35,12 +35,16 @@ export function RootLayout() {
         {t('app.skipToContent')}
       </a>
       <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4">
-          <Link to="/" className="mr-1 text-lg font-semibold tracking-tight">
+        <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4 sm:gap-2">
+          <Link
+            to="/"
+            className="mr-1 flex items-baseline gap-0.5 font-serif text-xl font-medium tracking-tight"
+          >
             {t('app.name')}
+            <span aria-hidden className="size-1.5 rounded-full bg-clay" />
           </Link>
           <DemoBadge />
-          <nav aria-label="Main" className="ml-auto flex items-center gap-1">
+          <nav aria-label="Main" className="ml-auto flex items-center gap-0.5 sm:gap-1">
             <NavLink to="/discover" className={navClass} aria-label={t('nav.discover')}>
               <SearchIcon aria-hidden className="size-4" />
               <span className="hidden sm:inline">{t('nav.discover')}</span>
@@ -53,6 +57,7 @@ export function RootLayout() {
           <Button
             variant="ghost"
             size="sm"
+            className="w-9 px-0 sm:w-auto sm:px-3"
             aria-label={`${t('nav.language')}: ${i18n.language.toUpperCase()}`}
             onClick={() => {
               const next =
@@ -65,6 +70,7 @@ export function RootLayout() {
           <Button
             variant="ghost"
             size="icon"
+            className="size-9"
             aria-label={`${t('nav.theme')}: ${t(`theme.${theme}`)}`}
             title={t(`theme.${nextTheme.value}`)}
             onClick={() => setTheme(nextTheme.value)}

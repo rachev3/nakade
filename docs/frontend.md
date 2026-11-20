@@ -106,7 +106,7 @@ Until endpoints exist, MSW handlers in `apps/web/src/api/mocks` serve fixtures s
 Done (skeleton): `apps/web` scaffold, `wrangler.jsonc` moved into it, neutral design tokens + base layout, `<Fact>` / `<Scenario>`, MSW mock API with 5 towns + 2 villages, the full clickable journey (landing → start → Quick/Detailed Match → swipe deck → place detail → simulation stub → saved / compare / plan stubs).
 
 Next:
-1. Visual direction (mood, colours, type) → real tokens and styling
+1. ~~Visual direction~~ Done: "Rodopi calm" (forest green + clay on cream, Lora + Sofia Sans, light and dark). See `apps/web/src/styles/tokens.css`
 2. MapLibre map on place detail
 3. Swipe-card images (licensed) and copy
 4. Switch to the real API when the backend publishes its OpenAPI spec

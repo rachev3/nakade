@@ -217,7 +217,8 @@
     "alternatives": "Виж алтернативи",
     "excludedBecause": "Отделено настрана, защото:",
     "noScore": "Няма достатъчно данни",
-    "weight": "тежест {{value}}%"
+    "weight": "тежест {{value}}%",
+    "noScoreShort": "няма данни"
   },
   "reason": {
     "transport": "Добри транспортни връзки",

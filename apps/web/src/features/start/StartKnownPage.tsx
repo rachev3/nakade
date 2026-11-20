@@ -52,7 +52,7 @@ export default function StartKnownPage() {
 
   return (
     <form onSubmit={onSubmit} className="mx-auto flex max-w-md flex-col gap-6" noValidate>
-      <h1 className="text-3xl font-semibold tracking-tight">{t('startKnown.title')}</h1>
+      <h1 className="text-3xl sm:text-4xl">{t('startKnown.title')}</h1>
       <div className="space-y-2">
         <Label htmlFor="from">
           {t('startKnown.from')}{' '}

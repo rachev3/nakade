@@ -32,9 +32,7 @@ export default function SimulationPage() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {t('simulation.title', { place: name })}
-        </h1>
+        <h1 className="text-3xl sm:text-4xl">{t('simulation.title', { place: name })}</h1>
         <p className="text-sm text-muted-foreground">{t('simulation.intro')}</p>
         <div className="flex flex-wrap gap-4 text-xs">
           <span className="inline-flex items-center gap-1.5">

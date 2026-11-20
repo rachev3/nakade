@@ -10,6 +10,7 @@ import { Link, useParams } from 'react-router'
 import { useMatches, useRecordSwipe, useSaved, useSettlement } from '@/api/queries'
 import type { Dimension, Fact as FactData } from '@/api/types'
 import { Fact } from '@/components/Fact'
+import { Landscape } from '@/components/Landscape'
 import { MapView } from '@/components/MapView'
 import { PlaceHeading } from '@/components/PlaceHeading'
 import { ScoreBar } from '@/components/ScoreBar'
@@ -43,23 +44,29 @@ export default function PlacePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="-mx-4 -mt-6 h-40 overflow-hidden sm:mx-0 sm:mt-0 sm:h-52 sm:rounded-3xl">
+        <Landscape seed={place.ekatte} type={place.type} />
+      </div>
+      <div className="flex items-start justify-between gap-3">
         <div className="space-y-2">
           <PlaceHeading place={place} />
-          <p className="max-w-prose">{place.hook}</p>
+          <p className="max-w-prose font-serif text-lg italic">{place.hook}</p>
         </div>
         <Button
           variant={isSaved ? 'secondary' : 'outline'}
+          size="sm"
+          className="shrink-0"
+          aria-pressed={isSaved}
           onClick={() => swipe.mutate({ ekatte, action: 'save' })}
-          disabled={isSaved || swipe.isPending}
+          disabled={swipe.isPending}
         >
           {isSaved ? <BookmarkCheckIcon aria-hidden /> : <BookmarkIcon aria-hidden />}
           {isSaved ? t('place.saved') : t('place.save')}
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Button asChild>
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        <Button asChild size="lg">
           <Link to={`/places/${ekatte}/try`}>
             <PlayIcon aria-hidden />
             {t('place.try')}
@@ -71,7 +78,7 @@ export default function PlacePage() {
             {t('place.plan')}
           </Link>
         </Button>
-        <Button asChild variant="ghost">
+        <Button asChild variant="outline">
           <Link to="/discover">
             <CompassIcon aria-hidden />
             {t('place.alternatives')}
@@ -83,14 +90,14 @@ export default function PlacePage() {
         <div className="flex flex-col gap-6">
           {match ? (
             <Card>
-              <div className="flex items-baseline justify-between gap-2">
-                <CardTitle className="text-lg">{t('place.fit')}</CardTitle>
-                <span className="text-sm text-muted-foreground">
-                  <span className="text-2xl font-semibold text-foreground">
-                    {percent(match.score)}%
-                  </span>{' '}
-                  · {t('place.confidence', { value: percent(match.confidence) })}
-                </span>
+              <div className="space-y-1">
+                <CardTitle className="font-serif text-xl font-medium">{t('place.fit')}</CardTitle>
+                <p className="flex items-baseline gap-2">
+                  <span className="font-serif text-4xl text-primary">{percent(match.score)}%</span>
+                  <span className="text-sm text-muted-foreground">
+                    {t('place.confidence', { value: percent(match.confidence) })}
+                  </span>
+                </p>
               </div>
               <div className="space-y-2">
                 {match.dimensions.map((d) => (
@@ -105,7 +112,7 @@ export default function PlacePage() {
           {match && <FitExplanation match={match} factsById={factsById} />}
 
           <Card>
-            <CardTitle className="text-lg">{t('place.facts')}</CardTitle>
+            <CardTitle className="font-serif text-xl font-medium">{t('place.facts')}</CardTitle>
             <div className="space-y-4">
               {Object.entries(byDimension).map(([dimension, facts]) => (
                 <section key={dimension} className="space-y-1.5">
@@ -125,12 +132,12 @@ export default function PlacePage() {
 
         <div className="flex flex-col gap-6">
           <Card>
-            <CardTitle className="text-lg">{t('place.map')}</CardTitle>
+            <CardTitle className="font-serif text-xl font-medium">{t('place.map')}</CardTitle>
             <MapView lat={place.lat} lon={place.lon} />
           </Card>
           {place.nearby.length > 0 && (
             <Card>
-              <CardTitle className="text-lg">{t('place.nearby')}</CardTitle>
+              <CardTitle className="font-serif text-xl font-medium">{t('place.nearby')}</CardTitle>
               <ul className="space-y-2 text-sm">
                 {place.nearby.map((n) => (
                   <li key={n.settlement.ekatte} className="flex justify-between gap-2">

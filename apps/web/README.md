@@ -86,10 +86,7 @@ Rule: `features/*` import from `components/`, `api/` and `lib/`, never from each
 
 ### Styling
 
-Styling is deliberately neutral (greyscale tokens) until the visual direction is decided. Change
-colours in `src/styles/tokens.css`; components only use semantic names (`bg-primary`,
-`text-fact-verified`, …). shadcn/ui components live in `src/components/ui` (`components.json` is set
-up, so `pnpm dlx shadcn@latest add <name>` works).
+Visual direction: **"Rodopi calm"**. It's warm, earthy and editorial: forest green and clay on cream, with a "forest night" dark theme. Headings use Lora; everything else uses Sofia Sans, a Bulgarian typeface with Bulgarian Cyrillic forms. Both fonts are self-hosted via Fontsource, so no Google Fonts requests are made. All colours live in `src/styles/tokens.css` (`:root` = light, `.dark` = dark), and components only use semantic names (`bg-primary`, `text-clay`, `text-fact-verified`, …). Swipe cards and place pages use a generated `<Landscape>` illustration until we have licensed photos. shadcn/ui components live in `src/components/ui` (`components.json` is set up, so `pnpm dlx shadcn@latest add <name>` works).
 
 ## Deploy
 
@@ -100,4 +97,4 @@ up, so `pnpm dlx shadcn@latest add <name>` works).
 
 - Tests and the `web` CI workflow were skipped for the hackathon.
 - MapLibre map (placeholder `MapView`), real images on swipe cards.
-- Visual design (waiting for the visual direction).
+- Real photos for places (the `<Landscape>` illustration is a placeholder).

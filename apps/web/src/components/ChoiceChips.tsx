@@ -48,10 +48,10 @@ export function ChoiceChips<T extends string>({
             aria-pressed={multiple ? selected : undefined}
             onClick={() => toggle(o.value)}
             className={cn(
-              'inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+              'inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-[15px] transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
               selected
                 ? 'border-primary bg-primary text-primary-foreground'
-                : 'bg-background hover:bg-accent',
+                : 'border-input bg-card hover:border-primary/40 hover:bg-accent',
             )}
           >
             {selected && <CheckIcon aria-hidden className="size-4" />}
