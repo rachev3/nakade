@@ -52,6 +52,7 @@ export const routes = [
             loader: prefetchSettlement,
             lazy: page(() => import('@/features/simulation/SimulationPage')),
           },
+          { path: 'map', lazy: page(() => import('@/features/map/MapPage')) },
           { path: 'saved', lazy: page(() => import('@/features/compare/SavedPage')) },
           { path: 'compare', lazy: page(() => import('@/features/compare/ComparePage')) },
           {

@@ -11,7 +11,8 @@
     "saved": "Saved",
     "home": "Home",
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "map": "Map"
   },
   "theme": {
     "light": "Light",
@@ -517,5 +518,25 @@
     "quick": "10 questions, about 2 minutes. Good enough to start.",
     "detailed": "Up to 30 questions, about 6 minutes. The sharpest matches.",
     "note": "You can switch from Quick to Detailed at any time without losing anything."
+  },
+  "map": {
+    "heading": "Map of your matches",
+    "intro": "{{count}} places, coloured by how well they fit you. Click a pin for more.",
+    "introNoProfile": "Take the quick profile and we'll colour the places by how well they fit you.",
+    "startProfile": "Start the quick profile",
+    "top": "Top 10",
+    "legend": "Legend",
+    "fit": "{{value}}% match",
+    "open": "Open the place →",
+    "title": "Map: {{name}}",
+    "region": "Interactive map",
+    "needsKey": "To see all places on the map, add a Google Maps API key in apps/web/.env.local (VITE_GOOGLE_MAPS_API_KEY).",
+    "band": {
+      "great": "85%+",
+      "good": "70–84%",
+      "ok": "55–69%",
+      "weak": "below 55%",
+      "excluded": "Fails a must-have"
+    }
   }
 }

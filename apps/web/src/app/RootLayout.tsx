@@ -1,4 +1,4 @@
-import { HeartIcon, MonitorIcon, MoonIcon, SearchIcon, SunIcon } from 'lucide-react'
+import { HeartIcon, MapIcon, MonitorIcon, MoonIcon, SearchIcon, SunIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigation } from 'react-router'
@@ -62,6 +62,10 @@ export function RootLayout() {
             <NavLink to="/discover" className={navClass} aria-label={t('nav.discover')}>
               <SearchIcon aria-hidden className="size-4" />
               <span className="hidden sm:inline">{t('nav.discover')}</span>
+            </NavLink>
+            <NavLink to="/map" className={navClass} aria-label={t('nav.map')}>
+              <MapIcon aria-hidden className="size-4" />
+              <span className="hidden sm:inline">{t('nav.map')}</span>
             </NavLink>
             <NavLink to="/saved" className={navClass} aria-label={t('nav.saved')}>
               <HeartIcon aria-hidden className="size-4" />
