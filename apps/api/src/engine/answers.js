@@ -14,7 +14,19 @@ const ENUMS = {
   healthcare_needs: ["none", "regular", "specialist"],
   nature: ["mountains", "forest", "water", "sea", "plains"],
   community: ["quiet", "lively", "either"],
+  // added with the 10 / 30 question onboarding
+  max_home_distance: ["up_to_1h", "up_to_2h", "up_to_4h", "any"],
+  place_type: ["village", "small_town", "city", "any"],
+  home_type: ["house", "apartment", "either"],
+  internet_needs: ["basic", "video_calls", "heavy"],
+  public_transport: ["daily", "sometimes", "never"],
+  sofia_trips: ["weekly", "monthly", "rarely"],
+  visit_home: ["weekly", "monthly", "rarely"],
+  cold_tolerance: ["love_winter", "fine", "prefer_mild"],
+  going_out: ["often", "sometimes", "rarely"],
+  depopulation: ["important", "somewhat", "not_important"],
 };
+const BOOLEANS = ["has_car", "partner_job", "walkable", "heating_costs", "pets"];
 
 /** Returns a list of problems (empty = ok). All answers are optional (progressive profiling). */
 export function validateAnswers(a = {}, { knownEkatte } = {}) {
@@ -30,11 +42,10 @@ export function validateAnswers(a = {}, { knownEkatte } = {}) {
   const int = (k, min, max) =>
     a[k] == null || (Number.isInteger(a[k]) && a[k] >= min && a[k] <= max) || errors.push(`${k}: expected an integer ${min}..${max}`);
 
-  one("household");
-  one("work_mode");
-  one("housing");
-  one("healthcare_needs");
-  one("community");
+  for (const k of Object.keys(ENUMS)) if (!["must_haves", "nature"].includes(k)) one(k);
+  for (const k of BOOLEANS) if (a[k] != null && typeof a[k] !== "boolean") errors.push(`${k}: expected a boolean`);
+  int("buy_budget_eur", 0, 10000000);
+  int("office_days", 0, 5);
   many("priorities", DIMENSIONS, 3);
   many("compromises", DIMENSIONS);
   many("must_haves", ENUMS.must_haves);
@@ -43,7 +54,6 @@ export function validateAnswers(a = {}, { knownEkatte } = {}) {
     errors.push("kids_ages: expected integers 0..18");
   int("budget_eur_month", 0, 100000);
   int("max_commute_min", 0, 240);
-  if (a.has_car != null && typeof a.has_car !== "boolean") errors.push("has_car: expected a boolean");
   if (a.current_location != null && knownEkatte && !knownEkatte.has(a.current_location))
     errors.push(`current_location: unknown EKATTE ${a.current_location}`);
   return errors;
@@ -102,6 +112,28 @@ export function weightsFor(a = {}) {
   if (a.healthcare_needs === "specialist") bump("healthcare", 2, "нужда от специалисти");
   if (a.nature?.length) bump("nature", 1, "предпочитания за природа");
 
+  // Detailed questions
+  if (a.place_type && a.place_type !== "any") bump("demographics", 1, "предпочитан тип място");
+  if (a.partner_job) bump("employment", 1, "партньорът търси работа");
+  if (a.internet_needs === "heavy") bump("amenities", 0.5, "тежка работа в интернет");
+  if (a.walkable) bump("amenities", 1, "всичко пеша");
+  if (a.public_transport === "daily") bump("transport", 1.5, "всеки ден с обществен транспорт");
+  if (a.public_transport === "sometimes") bump("transport", 0.5, "понякога с обществен транспорт");
+  if (a.sofia_trips === "weekly") bump("transport", 1, "всяка седмица до София");
+  if (a.sofia_trips === "monthly") bump("transport", 0.5, "всеки месец до София");
+  if (a.visit_home === "weekly" && a.current_location) bump("transport", 1, "всяка седмица до вкъщи");
+  if (a.visit_home === "monthly" && a.current_location) bump("transport", 0.5, "всеки месец до вкъщи");
+  if (a.cold_tolerance && a.cold_tolerance !== "fine") bump("nature", 0.5, "предпочитание за климат");
+  if (a.heating_costs) bump("nature", 0.5, "сметки за отопление");
+  if (a.going_out === "often") bump("amenities", 1, "често навън");
+  if (a.going_out === "sometimes") bump("amenities", 0.3, "понякога навън");
+  if (a.pets) bump("amenities", 0.2, "домашен любимец → ветеринар");
+  if (a.depopulation === "important") bump("demographics", 1.5, "да не се обезлюдява");
+  if (a.depopulation === "not_important") {
+    w.demographics *= 0.5;
+    trace.push("demographics ×0.5: обезлюдяването не е важно");
+  }
+
   for (const d of a.priorities ?? []) bump(d, 2, "приоритет");
   for (const d of a.compromises ?? []) {
     w[d] = Math.round(w[d] * 0.3 * 100) / 100;
@@ -109,6 +141,7 @@ export function weightsFor(a = {}) {
   }
 
   if (a.budget_eur_month != null && a.housing !== "buy") w[HOUSING] = 1.5;
+  if (a.buy_budget_eur != null && a.housing === "buy") w[HOUSING] = 1.5;
 
   const total = Object.values(w).reduce((s, x) => s + x, 0);
   const normalised = Object.fromEntries(Object.entries(w).map(([k, x]) => [k, Math.round((x / total) * 1000) / 1000]));

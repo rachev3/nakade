@@ -2,7 +2,7 @@
 // the API contract (apps/web/src/api/openapi.yaml). Deterministic and pure: no DB, no LLM, no randomness.
 
 import { DIMENSIONS, HOUSING, validateAnswers, weightsFor } from "./answers.js";
-import { SCORERS, MUST_HAVES } from "./score.js";
+import { SCORERS, MUST_HAVES, HOME_DISTANCE_MIN } from "./score.js";
 import { ORIGINS } from "./origins.js";
 
 export { DIMENSIONS, validateAnswers, weightsFor, ORIGINS };
@@ -106,6 +106,15 @@ export function createEngine(settlements) {
       if (ok === false) excluded_because.push(constraintText(mh, ctx));
       if (ok === null) unknowns.push({ dimension: MUST_HAVE_DIMENSION[mh], missing: rule.metrics });
     }
+    const homeLimit = HOME_DISTANCE_MIN[a.max_home_distance];
+    const homeMin = F.v("drive_min_to_current_location");
+    if (homeLimit && homeMin != null && homeMin > homeLimit)
+      excluded_because.push({
+        text_key: "constraint.max_home_distance",
+        params: { drive_min: homeMin, limit_min: homeLimit, origin: origin?.name },
+        fact_ids: [F.id("drive_min_to_current_location")],
+        text: `На ${fmt(homeMin)} мин с кола от ${origin?.name}, а лимитът ти е ${homeLimit / 60} ч.`,
+      });
     if ((a.must_haves ?? []).includes("train_to_sofia") && excluded_because.every((e) => e.text_key !== "constraint.train_to_sofia"))
       unknowns.push({ dimension: "transport", missing: ["train_lines_to_sofia"] }); // a station nearby does not prove a line to Sofia
 
@@ -156,6 +165,7 @@ export function createEngine(settlements) {
     origins: () => ORIGINS,
     settlements: () => all,
     get: (ekatte) => byEkatte.get(ekatte) ?? null,
+    summary: (s) => summary(s, factsOf(s)),
   };
 }
 

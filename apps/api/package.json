@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "match": "node --env-file-if-exists=../../data/pipeline/.env --env-file-if-exists=.env scripts/match.mjs",
+    "serve": "node --env-file-if-exists=../../data/pipeline/.env --env-file-if-exists=.env src/server.mjs",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {

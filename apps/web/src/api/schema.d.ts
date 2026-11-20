@@ -254,6 +254,36 @@ export interface components {
             /** @description Places with important people (free text) */
             connections?: string | null;
             compromises?: components["schemas"]["Dimension"][];
+            /**
+             * @description Hard limit on drive time to current_location
+             * @enum {string}
+             */
+            max_home_distance?: "up_to_1h" | "up_to_2h" | "up_to_4h" | "any";
+            /** @enum {string} */
+            place_type?: "village" | "small_town" | "city" | "any";
+            /** @description Total budget when housing = buy */
+            buy_budget_eur?: number | null;
+            /** @enum {string} */
+            home_type?: "house" | "apartment" | "either";
+            office_days?: number | null;
+            /** @enum {string} */
+            internet_needs?: "basic" | "video_calls" | "heavy";
+            partner_job?: boolean;
+            walkable?: boolean;
+            /** @enum {string} */
+            public_transport?: "daily" | "sometimes" | "never";
+            /** @enum {string} */
+            sofia_trips?: "weekly" | "monthly" | "rarely";
+            /** @enum {string} */
+            visit_home?: "weekly" | "monthly" | "rarely";
+            /** @enum {string} */
+            cold_tolerance?: "love_winter" | "fine" | "prefer_mild";
+            heating_costs?: boolean;
+            /** @enum {string} */
+            going_out?: "often" | "sometimes" | "rarely";
+            pets?: boolean;
+            /** @enum {string} */
+            depopulation?: "important" | "somewhat" | "not_important";
         };
         /** @enum {string} */
         Completeness: "none" | "quick" | "detailed";

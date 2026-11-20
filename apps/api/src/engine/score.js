@@ -30,18 +30,24 @@ function combine(F, parts) {
 
 function transport(F, a) {
   const car = a.has_car !== false;
+  const pt = a.public_transport;
   const parts = [
     ["drive_min_to_oblast_centre", 0.35, (m) => lower(m, 10, 60)],
-    ["bus_stop_nearest_km", car ? 0.2 : 0.4, (km) => lower(km, 0.3, 3)],
-    ["train_station_nearest_km", 0.2, (km) => lower(km, 1, 20)],
+    ["bus_stop_nearest_km", pt === "daily" ? 0.5 : !car || pt === "sometimes" ? 0.35 : 0.2, (km) => lower(km, 0.3, 3)],
+    ["train_station_nearest_km", pt === "daily" ? 0.35 : 0.2, (km) => lower(km, 1, 20)],
   ];
   if ((a.work_mode === "office" || a.work_mode === "hybrid") && a.max_commute_min != null) {
     // The job is assumed to stay where the user lives now; without a current location, in the oblast centre.
-    // Hybrid workers commute less often, so they get twice the stated limit before the score drops to 0.
+    // Fewer office days → a longer drive is still acceptable (up to 3× the stated limit at 1–2 days a week).
     const max = Math.max(a.max_commute_min, 5);
+    const days = a.work_mode === "office" ? 5 : (a.office_days ?? 2);
     const target = F.v("drive_min_to_current_location") != null ? "drive_min_to_current_location" : "drive_min_to_oblast_centre";
-    parts.push([target, 0.6, (m) => lower(m, max, max * (a.work_mode === "hybrid" ? 3 : 2))]);
+    parts.push([target, 0.6, (m) => lower(m, max, max * (days <= 2 ? 3 : days <= 3 ? 2.5 : 2))]);
   }
+  if (a.sofia_trips === "weekly" || a.sofia_trips === "monthly")
+    parts.push(["drive_min_to_sofia", a.sofia_trips === "weekly" ? 0.4 : 0.2, (m) => lower(m, 30, a.sofia_trips === "weekly" ? 150 : 300)]);
+  if (a.visit_home === "weekly" || a.visit_home === "monthly")
+    parts.push(["drive_min_to_current_location", a.visit_home === "weekly" ? 0.4 : 0.2, (m) => lower(m, 45, a.visit_home === "weekly" ? 180 : 360)]);
   return combine(F, parts);
 }
 
@@ -67,23 +73,38 @@ function education(F, a) {
   return combine(F, parts);
 }
 
+// Download speed (Mbps) at which the need is not met at all / fully met.
+const INTERNET = { basic: [3, 10], video_calls: [10, 30], heavy: [30, 100] };
+
 function amenities(F, a) {
   const car = a.has_car !== false;
-  const near = (good, bad) => (km) => (car ? lower(km, good * 2, bad * 2) : lower(km, good, bad));
-  const net = a.work_mode === "remote" || a.work_mode === "self_employed" ? 0.5 : 0.25;
-  const res = combine(F, [
+  // walkable: everyday places within ~300 m count fully, nothing beyond 2 km
+  const near = (good, bad) => (km) => (a.walkable ? lower(km, 0.3, 2) : car ? lower(km, good * 2, bad * 2) : lower(km, good, bad));
+  const out = a.going_out === "often" ? 0.3 : a.going_out === "sometimes" ? 0.15 : 0;
+  const parts = [
     ["shop_nearest_km", 0.3, near(0.3, 5)],
     ["post_office_nearest_km", 0.15, near(0.5, 8)],
     ["food_drink_nearest_km", 0.15, near(0.3, 6)],
     ["culture_nearest_km", 0.1, near(0.5, 10)],
-  ]);
-  // Internet: the better of fixed and mobile.
+  ];
+  if (a.walkable) parts.push(["pharmacy_nearest_km", 0.15, near(0.3, 5)]);
+  if (out) {
+    parts.push(["food_drink_count", out / 2, (n) => higher(n, 0, a.going_out === "often" ? 30 : 8)]);
+    parts.push(["culture_count", out / 2, (n) => higher(n, 0, a.going_out === "often" ? 10 : 3)]);
+  }
+  if (a.pets) parts.push(["vet_nearest_km", 0.15, (km) => (car ? lower(km, 2, 25) : lower(km, 0.5, 5))]);
+  const res = combine(F, parts);
+  const w0 = parts.filter(([m]) => res.used.includes(m)).reduce((s, p) => s + p[1], 0);
+
+  // Internet: the better of fixed and mobile, against what the user needs.
+  const net = a.work_mode === "remote" || a.work_mode === "self_employed" || a.internet_needs ? 0.5 : 0.25;
+  const [bad, good] = INTERNET[a.internet_needs] ?? [10, 100];
   const fixed = F.v("internet_fixed_down_mbps");
   const mobile = F.v("internet_mobile_down_mbps");
   const best = Math.max(fixed ?? -1, mobile ?? -1);
   if (best >= 0) {
-    const w0 = 0.7; // weight of the parts above
-    res.score = res.score == null ? higher(best, 10, 100) : (res.score * w0 + higher(best, 10, 100) * net) / (w0 + net);
+    const s = higher(best, bad, good);
+    res.score = res.score == null ? s : (res.score * w0 + s * net) / (w0 + net);
     res.used.push(...(fixed != null ? ["internet_fixed_down_mbps"] : []), ...(mobile != null ? ["internet_mobile_down_mbps"] : []));
   } else res.missing.push("internet_fixed_down_mbps", "internet_mobile_down_mbps");
   return res;
@@ -92,17 +113,15 @@ function amenities(F, a) {
 function nature(F, a) {
   const prefs = (a.nature ?? []).filter((p) => p !== "sea");
   const missingExtra = (a.nature ?? []).includes("sea") ? ["sea_distance_km"] : []; // no data for the coast yet
+  const parts = [];
   if (!prefs.length) {
-    const r = combine(F, [
+    parts.push(
       ["forest_share_pct", 0.35, (p) => higher(p, 5, 40)],
       ["forest_nearest_km", 0.2, (km) => lower(km, 0.5, 8)],
       ["water_nearest_km", 0.2, (km) => lower(km, 0.5, 8)],
       ["protected_nearest_km", 0.25, (km) => lower(km, 1, 15)],
-    ]);
-    r.missing.push(...missingExtra);
-    return r;
+    );
   }
-  const parts = [];
   for (const p of prefs) {
     if (p === "mountains") parts.push(["elevation_m", 1, (m) => higher(m, 250, 800)]);
     if (p === "plains") parts.push(["elevation_m", 1, (m) => lower(m, 200, 600)]);
@@ -112,6 +131,10 @@ function nature(F, a) {
     }
     if (p === "water") parts.push(["water_nearest_km", 1, (km) => lower(km, 0.5, 8)]);
   }
+  // Climate (Open-Meteo): mean January temperature and heating need vs Sofia (= 100).
+  if (a.cold_tolerance === "prefer_mild") parts.push(["jan_mean_temp_c", 0.6, (t) => higher(t, -2, 3)]);
+  if (a.cold_tolerance === "love_winter") parts.push(["jan_mean_temp_c", 0.6, (t) => lower(t, -3, 1)]);
+  if (a.heating_costs) parts.push(["heating_vs_sofia_pct", 0.5, (p) => lower(p, 75, 110)]);
   const r = combine(F, parts);
   r.missing.push(...missingExtra);
   return r;
@@ -124,15 +147,40 @@ function employment(F) {
   ]);
 }
 
+// Population range that fits each place type.
+const PLACE_TYPE = { village: [0, 3000], small_town: [3000, 30000], city: [30000, Infinity] };
+
 function demographics(F, a) {
   const parts = [["population_trend_pct", 0.6, (t) => higher(t, -30, 10)]];
   if (a.community === "quiet") parts.push(["population_2021", 0.4, (p) => 1 - logHigher(p, 1000, 200000)]);
   if (a.community === "lively") parts.push(["population_2021", 0.4, (p) => logHigher(p, 1000, 200000)]);
+  if (PLACE_TYPE[a.place_type]) {
+    const [min, max] = PLACE_TYPE[a.place_type];
+    // inside the range → 1; one order of magnitude outside → 0
+    const fit = (p) => (p >= min && p <= max ? 1 : Math.max(0, 1 - Math.abs(Math.log10(Math.max(p, 1)) - Math.log10(p < min ? min : max))));
+    parts.push(["population_2021", 0.8, fit]);
+  }
   return combine(F, parts);
 }
 
+const APARTMENT_M2 = 65; // a typical 2-room flat, to turn EUR/m² into a price
+
 function housing(F, a) {
-  if (a.budget_eur_month == null || a.housing === "buy") return { score: null, used: [], missing: [] };
+  if (a.housing === "buy") {
+    if (a.buy_budget_eur == null) return { score: null, used: [], missing: [] };
+    const fit = (price) => higher(a.buy_budget_eur / price, 0.6, 1.1);
+    const parts = [];
+    if (a.home_type !== "apartment") parts.push(["house_sale_eur", 1, fit]);
+    if (a.home_type !== "house") parts.push(["apartment_sale_eur_m2", 1, (m2) => fit(m2 * APARTMENT_M2)]);
+    const r = combine(F, parts);
+    if (a.home_type !== "house" && a.home_type !== "apartment") {
+      // either: the better of the two options counts
+      const scores = parts.map(([m, , fn]) => (F.v(m) == null ? null : fn(F.v(m)))).filter((x) => x != null);
+      if (scores.length) r.score = Math.max(...scores);
+    }
+    return r;
+  }
+  if (a.budget_eur_month == null) return { score: null, used: [], missing: [] };
   return combine(F, [["rent_2room_eur_month", 1, (rent) => higher(a.budget_eur_month / rent, 0.6, 1.2)]]);
 }
 
@@ -164,3 +212,6 @@ export const MUST_HAVES = {
     },
   },
 };
+
+/** Hard limit from `max_home_distance`: drive time to the current location. */
+export const HOME_DISTANCE_MIN = { up_to_1h: 60, up_to_2h: 120, up_to_4h: 240 };

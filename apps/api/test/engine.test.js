@@ -130,3 +130,36 @@ test("validation: bad answers are rejected with readable errors", () => {
   assert.ok(bad.errors.some((e) => e.startsWith("current_location")));
   assert.ok(engine.rank({}).ok, "empty answers are fine (progressive profiling)");
 });
+
+// ---------- the 10 / 30 question onboarding ----------
+
+test("max_home_distance: places further than the limit fail the constraints", () => {
+  const ms = all({ current_location: "68134", max_home_distance: "up_to_1h" }).matches;
+  for (const m of ms) assert.equal(m.passes_constraints, m.facts[0].value <= 60, m.settlement.name_bg);
+  assert.ok(ms.some((m) => !m.passes_constraints && m.excluded_because[0].text_key === "constraint.max_home_distance"));
+});
+
+test("place_type steers the size of the suggested places", () => {
+  const cities = all({ place_type: "city", priorities: ["demographics"] }).matches.slice(0, 5);
+  assert.ok(cities.every((m) => m.settlement.population >= 30000), cities.map((m) => m.settlement.name_bg).join(", "));
+  const villages = all({ place_type: "village", priorities: ["demographics"] }).matches.slice(0, 5);
+  assert.ok(villages.every((m) => m.settlement.population <= 3000), villages.map((m) => m.settlement.name_bg).join(", "));
+});
+
+test("cold_tolerance: prefer_mild ranks warmer winters higher than love_winter", () => {
+  const jan = (ms) => ms.slice(0, 10).reduce((s, m) => s + fact(m.ekatte, "jan_mean_temp_c").value, 0) / 10;
+  const mild = jan(all({ cold_tolerance: "prefer_mild", priorities: ["nature"] }).matches);
+  const cold = jan(all({ cold_tolerance: "love_winter", priorities: ["nature"] }).matches);
+  assert.ok(mild > cold + 1, `mild ${mild} vs cold ${cold}`);
+});
+
+test("buying: housing is scored from the purchase budget", () => {
+  const d = all({ housing: "buy", buy_budget_eur: 120000, home_type: "house" }).matches[0].dimensions.find((x) => x.key === "housing");
+  assert.ok(d && d.evidence.some((id) => id.endsWith(":house_sale_eur")));
+});
+
+test("new answers are validated", () => {
+  const bad = engine.rank({ place_type: "castle", office_days: 9, pets: "yes" });
+  assert.equal(bad.ok, false);
+  assert.ok(["place_type", "office_days", "pets"].every((k) => bad.errors.some((e) => e.startsWith(k))));
+});

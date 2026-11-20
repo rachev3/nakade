@@ -129,6 +129,19 @@ function formatValue(fact: FactData, lang: string, t: (k: string) => string) {
       return `${n} ${t('unit.min')}`
     case 'years':
       return `${n} ${t('unit.years')}`
+    case 'km':
+      return `${n} ${t('unit.km')}`
+    case 'm':
+      return `${n} ${t('unit.m')}`
+    case 'pp':
+      return `${n} ${t('unit.pp')}`
+    case 'EUR/month':
+      return `${n} ${t('unit.eurMonth')}`
+    case 'Mbps':
+    case '°C':
+    case 'EUR':
+    case 'EUR/m²':
+      return `${n} ${unit}`
     default:
       return n
   }

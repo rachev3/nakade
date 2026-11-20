@@ -130,7 +130,7 @@ const settlements = pilot.settlements.map((s) => {
     add("education", `${k}_count`, s[`${k}_count`], "count", "derived", "osm", OSM_COUNT_METHOD);
   }
   // amenities
-  for (const k of ["shop", "post_office", "food_drink", "culture"]) {
+  for (const k of ["shop", "post_office", "food_drink", "culture", "vet"]) {
     add("amenities", `${k}_nearest_km`, s[`${k}_nearest_km`], "km", "derived", "osm", OSM_METHOD);
     add("amenities", `${k}_count`, s[`${k}_count`], "count", "derived", "osm", OSM_COUNT_METHOD);
   }

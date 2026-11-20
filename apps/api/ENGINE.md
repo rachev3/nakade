@@ -28,6 +28,48 @@ npm run match -- --answers my-answers.json
 
 The database holds only the 90 pilot settlements (`settlements`, `_id` = EKATTE). [data/pipeline/enrich-settlements.mjs](../../data/pipeline/enrich-settlements.mjs) builds them from the pilot dataset (OSM, OSRM, Ookla, Open-Meteo) plus census 2011/2021, municipal unemployment 2025 and housing listings, and stores every value as a contract `Fact` (`status`, `method`, `source`, `retrieved_at`).
 
+## Run it locally (real API + frontend)
+
+```powershell
+cd apps/api; npm install; npm run serve        # API on :8787, 90 settlements from Atlas (add -- --offline for the JSON file)
+pnpm --filter @nakade/web dev:live             # from the repo root; http://localhost:5173 without mocks, /api proxied to :8787
+```
+
+`src/server.mjs` implements the whole draft contract on top of the engine (in-memory sessions). Simulation and plan (`src/narratives.js`) are built from facts only, no LLM yet. The contract has no `housing` dimension yet, so the server leaves it out of `dimensions`/`reasons` while it still counts in the score.
+
+## Onboarding questions: 10 quick + 20 detailed
+
+Defined in [apps/web/src/features/onboarding/steps.ts](../web/src/features/onboarding/steps.ts). Detailed Match = all 30; conditional ones (`when`) are skipped when they don't apply, so a user sees 24–28.
+
+| # | Field | Flow | Data it uses |
+|---|---|---|---|
+| 1 | `household` | quick | weights (education, healthcare, employment) |
+| 2 | `current_location` (27 oblast centres) | quick | OSRM drive times to every oblast centre |
+| 3 | `max_home_distance` | quick | hard limit on drive time to `current_location` |
+| 4 | `work_mode` | quick | weights; commute; internet |
+| 5 | `has_car` | quick | distance curves everywhere |
+| 6 | `place_type` | quick | population 2021 vs village / small town / city |
+| 7 | `community` | quick | population 2021 (quiet ↔ lively) |
+| 8 | `nature` | quick | elevation, forest share, water |
+| 9 | `priorities` | quick | +2 weight |
+| 10 | `must_haves` | quick | hard constraints |
+| 11–14 | `housing`, `budget_eur_month`, `buy_budget_eur`, `home_type` | detailed | rent / house / apartment medians |
+| 15–16 | `max_commute_min`, `office_days` | detailed (office/hybrid) | drive time to current location |
+| 17 | `internet_needs` | detailed (remote/hybrid/self-employed) | Ookla speed vs 10 / 30 / 100 Mbps |
+| 18 | `partner_job` | detailed (couple/family) | employment weight |
+| 19 | `kids_ages` | detailed (family) | kindergarten < 7, school ≥ 7 |
+| 20 | `healthcare_needs` | detailed | hospital / doctor weight |
+| 21 | `walkable` | detailed | shop, pharmacy, post within ~1 km |
+| 22 | `public_transport` | detailed | bus stop, train station |
+| 23 | `sofia_trips` | detailed | OSRM drive time to Sofia |
+| 24 | `visit_home` | detailed | drive time to current location |
+| 25 | `cold_tolerance` | detailed | mean January temperature |
+| 26 | `heating_costs` | detailed | heating degree days vs Sofia |
+| 27 | `going_out` | detailed | cafés/restaurants and cultural venues count |
+| 28 | `pets` | detailed | nearest vet |
+| 29 | `depopulation` | detailed | demographics weight (census trend) |
+| 30 | `compromises` | detailed | ×0.3 weight |
+
 ## Weights
 
 Every dimension starts at 1, the rules below adjust it, then everything is normalised to sum 1.
