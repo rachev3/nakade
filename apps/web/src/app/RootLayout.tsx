@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'motion/react'
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigation } from 'react-router'
 import { DemoBadge } from '@/components/DemoBadge'
+import { LogoMark } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { LANGUAGES } from '@/lib/i18n'
 import { rise, smooth } from '@/lib/motion'
@@ -52,10 +53,10 @@ export function RootLayout() {
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-1 px-4 sm:gap-2">
           <Link
             to="/"
-            className="mr-1 flex items-baseline gap-0.5 font-serif text-xl font-medium tracking-tight"
+            className="mr-1 flex items-center gap-2 font-serif text-xl font-medium tracking-tight"
           >
+            <LogoMark className="size-7 text-primary" />
             {t('app.name')}
-            <span aria-hidden className="size-1.5 rounded-full bg-clay" />
           </Link>
           <DemoBadge />
           <nav aria-label="Main" className="ml-auto flex items-center gap-0.5 sm:gap-1">
