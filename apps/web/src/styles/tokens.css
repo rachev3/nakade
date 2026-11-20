@@ -1,0 +1,73 @@
+/*
+ * Design tokens. NEUTRAL PLACEHOLDERS: the visual direction (colours, type, mood) is not
+ * decided yet. Change values here; components only use the semantic names.
+ *
+ * Light values on :root, dark overrides on .dark (set by the theme toggle, defaults to the
+ * system preference).
+ */
+:root {
+  --radius: 0.75rem;
+
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.2 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0 0);
+  --primary: oklch(0.25 0 0);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.25 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.5 0 0);
+  --accent: oklch(0.95 0 0);
+  --accent-foreground: oklch(0.25 0 0);
+  --destructive: oklch(0.55 0.2 27);
+  --border: oklch(0.9 0 0);
+  --input: oklch(0.9 0 0);
+  --ring: oklch(0.6 0 0);
+
+  /* Trust semantics (docs/frontend.md §4). Kept distinguishable without relying on colour alone. */
+  --fact-verified: oklch(0.5 0.12 155);
+  --fact-derived: oklch(0.5 0.12 250);
+  --fact-estimated: oklch(0.55 0.13 70);
+  --fact-missing: oklch(0.55 0 0);
+  --scenario: oklch(0.5 0.12 300);
+  --scenario-bg: oklch(0.96 0.02 300);
+  --demo: oklch(0.6 0.15 60);
+  --demo-foreground: oklch(0.2 0.03 60);
+  --like: oklch(0.55 0.14 155);
+  --dislike: oklch(0.55 0.18 27);
+}
+
+.dark {
+  --background: oklch(0.16 0 0);
+  --foreground: oklch(0.96 0 0);
+  --card: oklch(0.2 0 0);
+  --card-foreground: oklch(0.96 0 0);
+  --popover: oklch(0.22 0 0);
+  --popover-foreground: oklch(0.96 0 0);
+  --primary: oklch(0.92 0 0);
+  --primary-foreground: oklch(0.2 0 0);
+  --secondary: oklch(0.27 0 0);
+  --secondary-foreground: oklch(0.96 0 0);
+  --muted: oklch(0.27 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+  --accent: oklch(0.3 0 0);
+  --accent-foreground: oklch(0.96 0 0);
+  --destructive: oklch(0.65 0.19 25);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.55 0 0);
+
+  --fact-verified: oklch(0.75 0.13 155);
+  --fact-derived: oklch(0.75 0.11 250);
+  --fact-estimated: oklch(0.8 0.13 75);
+  --fact-missing: oklch(0.7 0 0);
+  --scenario: oklch(0.78 0.11 300);
+  --scenario-bg: oklch(0.25 0.04 300);
+  --demo: oklch(0.78 0.14 70);
+  --demo-foreground: oklch(0.2 0.03 60);
+  --like: oklch(0.72 0.14 155);
+  --dislike: oklch(0.7 0.17 25);
+}

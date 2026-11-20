@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nakade",
+  "compatibility_date": "2026-11-01",
+  // Static SPA: Vite builds into dist/. Unknown paths fall back to index.html so React Router
+  // can handle them. Later this Worker also proxies /api/* to the backend (see docs/frontend.md).
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+  },
+  "observability": { "enabled": true },
+  // production: deployed from main by Workers Builds (`npx wrangler deploy`)
+  "routes": [
+    { "pattern": "nakade.app", "custom_domain": true },
+    { "pattern": "www.nakade.app", "custom_domain": true },
+  ],
+  "env": {
+    // dev: deployed from dev by Workers Builds (`npx wrangler deploy --env dev`).
+    // noindex for dev.nakade.app is set in public/_headers.
+    "dev": {
+      "name": "nakade-dev",
+      "routes": [{ "pattern": "dev.nakade.app", "custom_domain": true }],
+    },
+  },
+}

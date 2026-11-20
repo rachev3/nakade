@@ -35,7 +35,21 @@ Both Workers are deployed by **Cloudflare Workers Builds**, connected to `rachev
 - `nakade`: builds on push to `main`, runs `npx wrangler deploy`
 - `nakade-dev`: builds on push to `dev`, runs `npx wrangler deploy --env dev`
 
-Environment config lives in `wrangler.jsonc` (`env.dev`).
+Environment config lives in [`apps/web/wrangler.jsonc`](../apps/web/wrangler.jsonc) (`env.dev`). `noindex` for dev.nakade.app comes from [`apps/web/public/_headers`](../apps/web/public/_headers).
+
+### Workers Builds settings (monorepo layout)
+
+Since the frontend moved into `apps/web`, both Workers need this build config (Dashboard → Workers & Pages → Worker → Settings → Build):
+
+| Setting | `nakade-dev` | `nakade` (prod) |
+|---|---|---|
+| Branch | `dev` | `main` |
+| Root directory | `apps/web` | `apps/web` |
+| Build command | `pnpm install --frozen-lockfile && pnpm build` | `pnpm install --frozen-lockfile && pnpm build` |
+| Deploy command | `npx wrangler deploy --env dev` | `npx wrangler deploy` |
+| Build variables | `PNPM_VERSION=12.11.2`, `NODE_VERSION=24` | `PNPM_VERSION=12.11.2`, `NODE_VERSION=24` |
+
+> ⚠️ **Switch the production `nakade` build config only when the first release containing `apps/web` is merged into `main`.** Until then `main` still has the old layout (root `wrangler.jsonc` + `public/`), and the new settings would break prod deploys. Switch `nakade-dev` when the PR that introduces `apps/web` is merged into `dev`.
 
 ## 3. Domain & edge (Cloudflare zone `nakade.app`)
 
@@ -49,7 +63,7 @@ Environment config lives in `wrangler.jsonc` (`env.dev`).
 | Workflow | Trigger | What |
 |---|---|---|
 | `branch-flow` | PR into `main` | Fails unless the head branch is `dev` |
-| `web` *(when scaffolded)* | PR / push touching `apps/web/**` | lint, typecheck, unit tests, build |
+| `web` *(deferred for the hackathon)* | PR / push touching `apps/web/**` | lint, typecheck, build. Run them locally for now: `pnpm lint && pnpm typecheck && pnpm build` |
 | `api` *(when chosen)* | PR / push touching `apps/api/**` | lint, tests, OpenAPI drift check |
 | `pipeline` *(when chosen)* | manual / schedule | run ingestion, validate output, load DB |
 

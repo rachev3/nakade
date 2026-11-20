@@ -42,13 +42,13 @@ Product context: [product-context.md](product-context.md).
 ## 3. Repository layout (monorepo)
 
 ```
-apps/web/          frontend                      → frontend.md
+apps/web/          frontend + its wrangler.jsonc → frontend.md
 apps/api/          backend API + algorithm       → proposals/backend.md
 data/pipeline/     ingestion + normalization     → proposals/data-pipeline.md
 data/sources.md    catalogue of data sources
 docs/              architecture, product, proposals
 .github/           CI workflows, PR template
-wrangler.jsonc     Cloudflare config (moves into apps/web once it is scaffolded)
+package.json       pnpm workspace root (apps/*)
 ```
 
 ## 4. Contracts between teams
