@@ -1,0 +1,320 @@
+{
+  "app": {
+    "name": "nakade",
+    "tagline": "Discover your place. Try your life there. Plan your move.",
+    "demoBadge": "Demo data",
+    "demoNotice": "This is a prototype. Every number shown is placeholder demo data, not real information about these places.",
+    "skipToContent": "Skip to content"
+  },
+  "nav": {
+    "discover": "Discover",
+    "saved": "Saved",
+    "home": "Home",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "common": {
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "error": "Something went wrong.",
+    "notFound": "We couldn't find that page.",
+    "goHome": "Go home",
+    "optional": "optional",
+    "continue": "Continue",
+    "stepOf": "Step {{current}} of {{total}}",
+    "minutes": "{{count}} min",
+    "town": "Town",
+    "village": "Village"
+  },
+  "landing": {
+    "title": "Where could your life be better?",
+    "lead": "Find a town or village in Bulgaria that fits the way you want to live, try a day there, and plan the move.",
+    "known": {
+      "title": "I know where",
+      "body": "Check how a place you have in mind fits you, and what to expect."
+    },
+    "discover": {
+      "title": "Help me find my place",
+      "body": "Tell us how you want to live and swipe through places that fit."
+    },
+    "resume": "Continue where you left off"
+  },
+  "startKnown": {
+    "title": "Where are you moving?",
+    "from": "I live in",
+    "to": "I want to move to",
+    "pick": "Choose a place",
+    "fromRequired": "Choose where you live now",
+    "toRequired": "Choose where you want to move",
+    "same": "Pick two different places"
+  },
+  "startDiscover": {
+    "title": "Describe the life you want",
+    "textLabel": "In your own words",
+    "textPlaceholder": "e.g. A peaceful place surrounded by nature, but with a doctor and a shop nearby",
+    "chipsLabel": "Or pick a few",
+    "atLeastOne": "Write a few words or pick at least one",
+    "chips": {
+      "quiet": "Quiet",
+      "nature": "Nature",
+      "mountains": "Mountains",
+      "near_city": "Near a city",
+      "good_schools": "Good schools",
+      "community": "Community",
+      "affordable": "Affordable",
+      "remote_work": "Remote work"
+    }
+  },
+  "onboarding": {
+    "quickTitle": "Quick Match",
+    "detailedTitle": "Detailed Match",
+    "upgrade": "Upgrade to Detailed Match",
+    "upgradeBody": "A few more questions for sharper results. Your answers, likes and saved places stay.",
+    "resumeNote": "Your answers are saved, so you can come back any time.",
+    "done": "See my matches",
+    "steps": {
+      "household": {
+        "title": "Who is moving?",
+        "options": {
+          "single": "Just me",
+          "couple": "Couple",
+          "family_kids": "Family with kids",
+          "retired": "Retired",
+          "other": "Other"
+        }
+      },
+      "work": {
+        "title": "How do you work?",
+        "options": {
+          "remote": "Remote",
+          "hybrid": "Hybrid",
+          "office": "In an office",
+          "self_employed": "Self-employed",
+          "looking": "Looking for work",
+          "not_working": "Not working"
+        }
+      },
+      "car": {
+        "title": "Do you have a car?",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "priorities": {
+        "title": "What matters most?",
+        "hint": "Pick up to 3"
+      },
+      "mustHaves": {
+        "title": "Any non-negotiables?",
+        "hint": "Places without these are set aside, and we tell you why",
+        "options": {
+          "hospital_30min": "Hospital within 30 min",
+          "school": "A school nearby",
+          "train_to_sofia": "Train to Sofia",
+          "fast_internet": "Fast internet",
+          "pharmacy": "Pharmacy nearby",
+          "kindergarten": "Kindergarten"
+        }
+      },
+      "housing": {
+        "title": "Rent or buy?",
+        "options": {
+          "rent": "Rent",
+          "buy": "Buy",
+          "undecided": "Not sure yet"
+        }
+      },
+      "budget": {
+        "title": "Monthly housing budget",
+        "label": "EUR per month",
+        "invalid": "Enter a number from 0 to 10000"
+      },
+      "commute": {
+        "title": "Longest acceptable commute",
+        "label": "Minutes, one way"
+      },
+      "kids": {
+        "title": "Children's ages",
+        "label": "Ages, separated by commas",
+        "invalid": "Use numbers 0–18 separated by commas"
+      },
+      "healthcare": {
+        "title": "Healthcare needs",
+        "options": {
+          "none": "Nothing special",
+          "regular": "Regular check-ups",
+          "specialist": "Specialist care"
+        }
+      },
+      "nature": {
+        "title": "What nature do you want close?",
+        "options": {
+          "mountains": "Mountains",
+          "forest": "Forest",
+          "water": "River or lake",
+          "sea": "Sea",
+          "plains": "Open plains"
+        }
+      },
+      "community": {
+        "title": "What kind of community?",
+        "options": {
+          "quiet": "Quiet",
+          "lively": "Lively",
+          "either": "Either"
+        }
+      },
+      "compromises": {
+        "title": "What could you compromise on?",
+        "hint": "These count less in your matches"
+      }
+    }
+  },
+  "dimension": {
+    "transport": "Transport",
+    "healthcare": "Healthcare",
+    "education": "Education",
+    "amenities": "Everyday amenities",
+    "nature": "Nature",
+    "employment": "Work",
+    "demographics": "Community & growth"
+  },
+  "discover": {
+    "title": "Discover",
+    "like": "Like",
+    "dislike": "Not for me",
+    "save": "Save",
+    "details": "Details",
+    "keyboardHint": "← not for me · → like · S save · Enter details",
+    "empty": "You've seen every place for now.",
+    "emptyCta": "See saved places",
+    "fit": "{{score}}% fit",
+    "excluded": "Doesn't meet a non-negotiable",
+    "personalise": "Answer 5 quick questions to personalise these"
+  },
+  "place": {
+    "fit": "How it fits you",
+    "confidence": "Confidence {{value}}%",
+    "why": "Why it fits",
+    "tradeoffs": "Trade-offs",
+    "unknowns": "What we don't know",
+    "noUnknowns": "No gaps in the data we use.",
+    "facts": "Facts",
+    "nearby": "Nearby",
+    "map": "Map",
+    "mapPlaceholder": "Map coming soon",
+    "save": "Save",
+    "saved": "Saved",
+    "try": "Try a day here",
+    "plan": "Plan my move",
+    "alternatives": "See alternatives",
+    "excludedBecause": "Set aside because:",
+    "noScore": "Not enough data",
+    "weight": "weight {{value}}%",
+    "noScoreShort": "no data"
+  },
+  "reason": {
+    "transport": "Good transport links",
+    "healthcare": "Healthcare within easy reach",
+    "education": "Schools and kindergartens nearby",
+    "amenities": "Shops and services for everyday life",
+    "nature": "Lots of nature around",
+    "employment": "A healthy local job market",
+    "demographics": "A growing, active community"
+  },
+  "tradeoff": {
+    "transport": "Longer trips to bigger cities",
+    "healthcare": "Further from hospitals",
+    "education": "Fewer schools close by",
+    "amenities": "Fewer shops and services",
+    "nature": "Less green space",
+    "employment": "Fewer local jobs",
+    "demographics": "An older, shrinking population"
+  },
+  "constraint": {
+    "hospital_30min": "No hospital within 30 min",
+    "school": "No school nearby",
+    "train_to_sofia": "No train to Sofia",
+    "fast_internet": "Fast internet is not widely available",
+    "pharmacy": "No pharmacy nearby",
+    "kindergarten": "No kindergarten places"
+  },
+  "metric": {
+    "drive_min_to_sofia": "Drive to Sofia",
+    "train_station": "Train station",
+    "drive_min_to_hospital": "Drive to nearest hospital",
+    "gp_count": "GPs",
+    "schools": "Schools",
+    "drive_min_to_school": "Drive to nearest school",
+    "kindergarten_capacity": "Kindergarten places",
+    "supermarkets": "Supermarkets",
+    "broadband_coverage_pct": "Fast-internet coverage",
+    "forest_share_pct": "Forest around",
+    "unemployment_rate_pct": "Unemployment",
+    "job_ads_per_1000": "Job ads per 1000 people",
+    "median_age": "Median age"
+  },
+  "fact": {
+    "verified": "Verified",
+    "derived": "Calculated",
+    "estimated": "Estimate",
+    "noData": "No reliable data",
+    "source": "Source",
+    "retrieved": "Retrieved {{date}}",
+    "method": "How",
+    "demo": "demo",
+    "yes": "Yes",
+    "no": "No",
+    "demoNote": "Placeholder value, not real data. With real data this would be marked: {{status}}."
+  },
+  "scenario": {
+    "label": "Imagined",
+    "hint": "A possible scenario, not data"
+  },
+  "simulation": {
+    "title": "A day in {{place}}",
+    "intro": "Solid lines are facts from data. Tinted, italic lines marked “Imagined” are possible scenarios.",
+    "loading": "Imagining your day…",
+    "legendFact": "Fact",
+    "legendScenario": "Imagined scenario"
+  },
+  "saved": {
+    "title": "Saved places",
+    "empty": "Nothing saved yet. Like or save places while you discover.",
+    "liked": "Liked",
+    "saved": "Saved",
+    "compare": "Compare selected ({{count}})",
+    "select": "Select {{name}} for comparison",
+    "pickTwo": "Pick 2–3 places to compare"
+  },
+  "compare": {
+    "title": "Compare",
+    "fit": "Overall fit",
+    "empty": "Pick places to compare from your saved list."
+  },
+  "plan": {
+    "title": "Your plan for {{place}}",
+    "intro": "A starting checklist based on your profile. Tick things off as you go.",
+    "progress": "{{done}} of {{total}} done",
+    "sections": {
+      "housing": "Housing",
+      "employment": "Work",
+      "healthcare": "Healthcare",
+      "education": "School",
+      "transport": "Transport",
+      "admin": "Paperwork",
+      "community": "Settling in"
+    }
+  },
+  "unit": {
+    "min": "min",
+    "years": "years"
+  }
+}

@@ -1,0 +1,84 @@
+/*
+ * Design tokens: "Rodopi calm" (direction A).
+ * Warm, earthy, editorial: forest green and clay on cream. Lora for display, Sofia Sans
+ * (a Bulgarian typeface with Bulgarian Cyrillic forms) for everything else.
+ *
+ * Light values on :root, dark overrides on .dark (theme toggle; defaults to the system).
+ * Components only use the semantic names below.
+ */
+:root {
+  --radius: 1rem;
+
+  --background: #f7f3ea; /* cream */
+  --foreground: #22302a; /* ink green */
+  --card: #fffdf8;
+  --card-foreground: #22302a;
+  --popover: #fffdf8;
+  --popover-foreground: #22302a;
+  --primary: #1f4d3a; /* forest */
+  --primary-foreground: #f7f3ea;
+  --secondary: #ece5d6; /* sand */
+  --secondary-foreground: #22302a;
+  --muted: #efe9dc;
+  --muted-foreground: #5b6a61;
+  --accent: #e5ede2; /* sage wash */
+  --accent-foreground: #1f4d3a;
+  --clay: #c8643b;
+  --clay-foreground: #fffdf8;
+  --sage: #c9d6c2;
+  --sage-deep: #9db59a;
+  --hill: #1f4d3a; /* nearest hill in illustrations */
+  --destructive: #b4442a;
+  --border: #e2d9c6;
+  --input: #d6ccb6;
+  --ring: #2f7a55;
+
+  /* Trust semantics (docs/frontend.md §4). Never rely on colour alone: icons + labels too. */
+  --fact-verified: #2f7a55;
+  --fact-derived: #2f6690;
+  --fact-estimated: #9a5f0a;
+  --fact-missing: #737a74;
+  --scenario: #7a5a93;
+  --scenario-bg: #efe6f3;
+  --demo: #e9b949;
+  --demo-foreground: #3d2e05;
+  --like: #2f7a55;
+  --dislike: #c8643b;
+}
+
+.dark {
+  --background: #111814; /* forest night */
+  --foreground: #ece6da;
+  --card: #18221d;
+  --card-foreground: #ece6da;
+  --popover: #1e2923;
+  --popover-foreground: #ece6da;
+  --primary: #9ccbae; /* moss */
+  --primary-foreground: #10241a;
+  --secondary: #24302a;
+  --secondary-foreground: #ece6da;
+  --muted: #1f2a24;
+  --muted-foreground: #a3aea6;
+  --accent: #24342c;
+  --accent-foreground: #ece6da;
+  --clay: #e3875f;
+  --clay-foreground: #1d0f08;
+  --sage: #263a30;
+  --sage-deep: #3d5a4a;
+  --hill: #4f7a63;
+  --destructive: #e57356;
+  --border: #2c3a33;
+  --input: #3a4a41;
+  --ring: #9ccbae;
+
+  --fact-verified: #7fc79e;
+  --fact-derived: #8bb8e0;
+  --fact-estimated: #e2b05a;
+  --fact-missing: #8e978f;
+  --scenario: #c3a6db;
+  --scenario-bg: #2a2235;
+  --demo: #e9b949;
+  --demo-foreground: #2a1f03;
+  --like: #7fc79e;
+  --dislike: #e3875f;
+}

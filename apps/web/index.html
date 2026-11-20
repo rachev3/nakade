@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="bg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Discover your place. Try your life there. Plan your move." />
+    <meta name="color-scheme" content="light dark" />
+    <title>nakade</title>
+    <script>
+      // Apply the stored theme before first paint (avoids a light flash in dark mode).
+      try {
+        var t = JSON.parse(localStorage.getItem('nakade.theme') || '{}').state?.theme || 'system'
+        if (t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches))
+          document.documentElement.classList.add('dark')
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

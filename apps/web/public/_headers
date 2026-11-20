@@ -1,0 +1,9 @@
+# Cloudflare Workers static-asset headers (https://developers.cloudflare.com/workers/static-assets/headers/)
+
+# Keep the dev environment out of search engines.
+https://dev.nakade.app/*
+  X-Robots-Tag: noindex
+
+# The MSW worker must always be fresh, or an old mock script can linger after an update.
+/mockServiceWorker.js
+  Cache-Control: no-cache
