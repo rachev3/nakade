@@ -1,7 +1,8 @@
 /**
- * Adaptive step engine (one question per screen). Quick Match = the `quick` steps; Detailed
- * Match = every step, pre-filled from the same profile, so upgrading never loses anything.
+ * Adaptive step engine (one question per screen). Quick Match = the 10 `quick` steps; Detailed
+ * Match = every step (10 + 20), pre-filled from the same profile, so upgrading never loses anything.
  * `when` hides steps that don't apply to this person (e.g. kids' ages only for families).
+ * Every answer feeds the matching engine (apps/api/ENGINE.md lists which data each one uses).
  */
 import type { ProfileAnswers } from '@/api/types'
 import type { Flow } from '@/lib/journey'
@@ -14,6 +15,37 @@ const DIMENSIONS = [
   'nature',
   'employment',
   'demographics',
+] as const
+
+/** The 27 oblast centres (EKATTE) the API accepts as `current_location` (apps/api/src/engine/origins.js). */
+const ORIGINS = [
+  '68134',
+  '56784',
+  '10135',
+  '07079',
+  '63427',
+  '68850',
+  '56722',
+  '72624',
+  '83510',
+  '55871',
+  '67338',
+  '87374',
+  '77195',
+  '04279',
+  '10447',
+  '12259',
+  '14218',
+  '55155',
+  '10971',
+  '40909',
+  '41112',
+  '48489',
+  '73626',
+  '66425',
+  '43952',
+  '61710',
+  '67653',
 ] as const
 
 export type StepKind =
@@ -33,31 +65,69 @@ export interface StepDef {
   when?: (a: ProfileAnswers) => boolean
 }
 
+const single = (options: readonly string[], optionKey: string): StepKind => ({
+  type: 'single',
+  options,
+  optionKey,
+})
+const yesNo: StepKind = { type: 'boolean' }
+
 export const STEPS: StepDef[] = [
-  // ── Quick Match (~5) ──────────────────────────────────────────────
+  // ── Quick Match (10) ──────────────────────────────────────────────
   {
     id: 'household',
     i18n: 'household',
     field: 'household',
     flow: 'quick',
-    kind: {
-      type: 'single',
-      options: ['single', 'couple', 'family_kids', 'retired', 'other'],
-      optionKey: 'household',
-    },
+    kind: single(['single', 'couple', 'family_kids', 'retired', 'other'], 'household'),
+  },
+  {
+    id: 'origin',
+    i18n: 'origin',
+    field: 'current_location',
+    flow: 'quick',
+    kind: single(ORIGINS, 'origin'),
+  },
+  {
+    id: 'homeDistance',
+    i18n: 'homeDistance',
+    field: 'max_home_distance',
+    flow: 'quick',
+    kind: single(['up_to_1h', 'up_to_2h', 'up_to_4h', 'any'], 'homeDistance'),
   },
   {
     id: 'work',
     i18n: 'work',
     field: 'work_mode',
     flow: 'quick',
+    kind: single(['remote', 'hybrid', 'office', 'self_employed', 'looking', 'not_working'], 'work'),
+  },
+  { id: 'car', i18n: 'car', field: 'has_car', flow: 'quick', kind: yesNo },
+  {
+    id: 'placeType',
+    i18n: 'placeType',
+    field: 'place_type',
+    flow: 'quick',
+    kind: single(['village', 'small_town', 'city', 'any'], 'placeType'),
+  },
+  {
+    id: 'community',
+    i18n: 'community',
+    field: 'community',
+    flow: 'quick',
+    kind: single(['quiet', 'lively', 'either'], 'community'),
+  },
+  {
+    id: 'nature',
+    i18n: 'nature',
+    field: 'nature',
+    flow: 'quick',
     kind: {
-      type: 'single',
-      options: ['remote', 'hybrid', 'office', 'self_employed', 'looking', 'not_working'],
-      optionKey: 'work',
+      type: 'multi',
+      options: ['mountains', 'forest', 'water', 'sea', 'plains'],
+      optionKey: 'nature',
     },
   },
-  { id: 'car', i18n: 'car', field: 'has_car', flow: 'quick', kind: { type: 'boolean' } },
   {
     id: 'priorities',
     i18n: 'priorities',
@@ -83,13 +153,14 @@ export const STEPS: StepDef[] = [
       optionKey: 'mustHaves',
     },
   },
-  // ── Detailed Match (adaptive) ─────────────────────────────────────
+
+  // ── Detailed Match (+20, adaptive) ────────────────────────────────
   {
     id: 'housing',
     i18n: 'housing',
     field: 'housing',
     flow: 'detailed',
-    kind: { type: 'single', options: ['rent', 'buy', 'undecided'], optionKey: 'housing' },
+    kind: single(['rent', 'buy', 'undecided'], 'housing'),
   },
   {
     id: 'budget',
@@ -97,6 +168,23 @@ export const STEPS: StepDef[] = [
     field: 'budget_eur_month',
     flow: 'detailed',
     kind: { type: 'number', min: 0, max: 10000 },
+    when: (a) => a.housing !== 'buy',
+  },
+  {
+    id: 'buyBudget',
+    i18n: 'buyBudget',
+    field: 'buy_budget_eur',
+    flow: 'detailed',
+    kind: { type: 'number', min: 0, max: 5000000 },
+    when: (a) => a.housing === 'buy',
+  },
+  {
+    id: 'homeType',
+    i18n: 'homeType',
+    field: 'home_type',
+    flow: 'detailed',
+    kind: single(['house', 'apartment', 'either'], 'homeType'),
+    when: (a) => a.housing === 'buy',
   },
   {
     id: 'commute',
@@ -105,6 +193,31 @@ export const STEPS: StepDef[] = [
     flow: 'detailed',
     kind: { type: 'number', min: 0, max: 240 },
     when: (a) => a.work_mode === 'office' || a.work_mode === 'hybrid',
+  },
+  {
+    id: 'officeDays',
+    i18n: 'officeDays',
+    field: 'office_days',
+    flow: 'detailed',
+    kind: { type: 'number', min: 0, max: 5 },
+    when: (a) => a.work_mode === 'hybrid',
+  },
+  {
+    id: 'internetNeeds',
+    i18n: 'internetNeeds',
+    field: 'internet_needs',
+    flow: 'detailed',
+    kind: single(['basic', 'video_calls', 'heavy'], 'internetNeeds'),
+    when: (a) =>
+      a.work_mode === 'remote' || a.work_mode === 'hybrid' || a.work_mode === 'self_employed',
+  },
+  {
+    id: 'partnerJob',
+    i18n: 'partnerJob',
+    field: 'partner_job',
+    flow: 'detailed',
+    kind: yesNo,
+    when: (a) => a.household === 'couple' || a.household === 'family_kids',
   },
   {
     id: 'kids',
@@ -119,25 +232,53 @@ export const STEPS: StepDef[] = [
     i18n: 'healthcare',
     field: 'healthcare_needs',
     flow: 'detailed',
-    kind: { type: 'single', options: ['none', 'regular', 'specialist'], optionKey: 'healthcare' },
+    kind: single(['none', 'regular', 'specialist'], 'healthcare'),
+  },
+  { id: 'walkable', i18n: 'walkable', field: 'walkable', flow: 'detailed', kind: yesNo },
+  {
+    id: 'publicTransport',
+    i18n: 'publicTransport',
+    field: 'public_transport',
+    flow: 'detailed',
+    kind: single(['daily', 'sometimes', 'never'], 'publicTransport'),
   },
   {
-    id: 'nature',
-    i18n: 'nature',
-    field: 'nature',
+    id: 'sofiaTrips',
+    i18n: 'sofiaTrips',
+    field: 'sofia_trips',
     flow: 'detailed',
-    kind: {
-      type: 'multi',
-      options: ['mountains', 'forest', 'water', 'sea', 'plains'],
-      optionKey: 'nature',
-    },
+    kind: single(['weekly', 'monthly', 'rarely'], 'sofiaTrips'),
   },
   {
-    id: 'community',
-    i18n: 'community',
-    field: 'community',
+    id: 'visitHome',
+    i18n: 'visitHome',
+    field: 'visit_home',
     flow: 'detailed',
-    kind: { type: 'single', options: ['quiet', 'lively', 'either'], optionKey: 'community' },
+    kind: single(['weekly', 'monthly', 'rarely'], 'visitHome'),
+    when: (a) => !!a.current_location,
+  },
+  {
+    id: 'cold',
+    i18n: 'cold',
+    field: 'cold_tolerance',
+    flow: 'detailed',
+    kind: single(['love_winter', 'fine', 'prefer_mild'], 'cold'),
+  },
+  { id: 'heating', i18n: 'heating', field: 'heating_costs', flow: 'detailed', kind: yesNo },
+  {
+    id: 'goingOut',
+    i18n: 'goingOut',
+    field: 'going_out',
+    flow: 'detailed',
+    kind: single(['often', 'sometimes', 'rarely'], 'goingOut'),
+  },
+  { id: 'pets', i18n: 'pets', field: 'pets', flow: 'detailed', kind: yesNo },
+  {
+    id: 'depopulation',
+    i18n: 'depopulation',
+    field: 'depopulation',
+    flow: 'detailed',
+    kind: single(['important', 'somewhat', 'not_important'], 'depopulation'),
   },
   {
     id: 'compromises',

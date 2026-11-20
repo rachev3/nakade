@@ -1,0 +1,13 @@
+{
+  "name": "@nakade/pipeline",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "enrich": "node enrich-settlements.mjs",
+    "seed": "node --env-file-if-exists=.env seed-mongo.mjs",
+    "seed:dry": "node --env-file-if-exists=.env seed-mongo.mjs --dry-run"
+  },
+  "dependencies": {
+    "mongodb": "~7.8.0"
+  }
+}

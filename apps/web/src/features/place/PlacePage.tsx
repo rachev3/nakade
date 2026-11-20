@@ -133,7 +133,12 @@ export default function PlacePage() {
         <div className="flex flex-col gap-6">
           <Card>
             <CardTitle className="font-serif text-xl font-medium">{t('place.map')}</CardTitle>
-            <MapView lat={place.lat} lon={place.lon} />
+            <MapView
+              lat={place.lat}
+              lon={place.lon}
+              name={placeName(place, i18n.language)}
+              nearby={place.nearby}
+            />
           </Card>
           {place.nearby.length > 0 && (
             <Card>
