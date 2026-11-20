@@ -1,23 +1,69 @@
 import { AlertTriangleIcon, CheckIcon, MinusIcon } from 'lucide-react'
-import { motion, type PanInfo, useMotionValue, useReducedMotion, useTransform } from 'motion/react'
+import {
+  motion,
+  type PanInfo,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+  type Variants,
+} from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import type { Match, SwipeAction } from '@/api/types'
 import { Landscape } from '@/components/Landscape'
 import { PlaceHeading } from '@/components/PlaceHeading'
 import { percent, placeName } from '@/lib/format'
+import { cn } from '@/lib/utils'
+import { smooth } from '@/lib/motion'
 
 const THRESHOLD = 120
 
 export type ExitDirection = -1 | 0 | 1
 
+/** Where the waiting card sits behind the top one. The top card enters from here, so the
+ *  hand-off looks like the stack moving up rather than a new card popping in. */
+const STACKED = { scale: 0.94, y: 14, opacity: 0.7 }
+
+/**
+ * Exit depends on how the card left. AnimatePresence passes `custom` to exiting children, which
+ * is the only way an already-removed card can know the direction.
+ */
+const cardVariants: Variants = {
+  stacked: STACKED,
+  top: { scale: 1, y: 0, opacity: 1, transition: smooth(0.35) },
+  exit: (dir: ExitDirection) =>
+    dir === 0
+      ? { y: -28, scale: 0.97, opacity: 0, transition: smooth(0.3) }
+      : {
+          x: dir * 480,
+          rotate: dir * 12,
+          opacity: 0,
+          transition: { x: smooth(0.4), rotate: smooth(0.4), opacity: smooth(0.25, 0.15) },
+        },
+}
+
+/** Non-interactive copy of the next card, sitting behind the top one. */
+export function StackedCard({ match }: { match: Match }) {
+  return (
+    <motion.div
+      aria-hidden
+      className="pointer-events-none absolute inset-0"
+      initial={{ ...STACKED, opacity: 0 }}
+      animate={STACKED}
+      transition={smooth(0.35)}
+    >
+      <div className={cn('h-full', SHELL)}>
+        <CardBody match={match} />
+      </div>
+    </motion.div>
+  )
+}
+
 export function SwipeCard({
   match,
   onSwipe,
-  exitDirection,
 }: {
   match: Match
   onSwipe: (action: SwipeAction) => void
-  exitDirection: ExitDirection
 }) {
   const { t, i18n } = useTranslation()
   const reduced = useReducedMotion()
@@ -35,19 +81,18 @@ export function SwipeCard({
     <motion.article
       aria-roledescription="card"
       aria-label={placeName(match.settlement, i18n.language)}
-      className="absolute inset-0 flex cursor-grab touch-pan-y flex-col overflow-hidden rounded-3xl border bg-card shadow-[0_16px_40px_-16px_rgb(0_0_0/0.3)] select-none active:cursor-grabbing"
+      className={cn('absolute inset-0 cursor-grab touch-pan-y select-none', SHELL)}
       style={{ x, rotate }}
       drag={reduced ? false : 'x'}
       dragSnapToOrigin
-      dragElastic={0.7}
+      dragElastic={0.6}
+      dragTransition={{ bounceStiffness: 300, bounceDamping: 26 }}
+      whileDrag={{ scale: 1.02, cursor: 'grabbing' }}
       onDragEnd={onDragEnd}
-      initial={reduced ? { opacity: 0 } : { scale: 0.95, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={
-        reduced || exitDirection === 0
-          ? { opacity: 0, transition: { duration: 0.15 } }
-          : { x: exitDirection * 600, opacity: 0, transition: { duration: 0.3 } }
-      }
+      variants={cardVariants}
+      initial="stacked"
+      animate="top"
+      exit="exit"
     >
       <motion.span
         aria-hidden
@@ -64,6 +109,18 @@ export function SwipeCard({
         {t('discover.dislike')}
       </motion.span>
 
+      <CardBody match={match} />
+    </motion.article>
+  )
+}
+
+const SHELL =
+  'flex flex-col overflow-hidden rounded-3xl border bg-card shadow-[0_16px_40px_-16px_rgb(0_0_0/0.3)]'
+
+function CardBody({ match }: { match: Match }) {
+  const { t } = useTranslation()
+  return (
+    <>
       {/* Illustration until we have licensed photos */}
       <div className="relative h-44 shrink-0">
         <Landscape seed={match.ekatte} type={match.settlement.type} />
@@ -101,6 +158,6 @@ export function SwipeCard({
           {t('place.confidence', { value: percent(match.confidence) })}
         </p>
       </div>
-    </motion.article>
+    </>
   )
 }

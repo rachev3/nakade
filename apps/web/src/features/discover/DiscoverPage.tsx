@@ -8,7 +8,7 @@ import type { SwipeAction } from '@/api/types'
 import { ErrorState, Loading } from '@/components/States'
 import { UpgradeCard } from '@/components/UpgradeCard'
 import { Button } from '@/components/ui/button'
-import { type ExitDirection, SwipeCard } from './SwipeCard'
+import { type ExitDirection, StackedCard, SwipeCard } from './SwipeCard'
 
 const EXIT: Record<SwipeAction, ExitDirection> = { like: 1, dislike: -1, save: 0 }
 
@@ -24,6 +24,7 @@ export default function DiscoverPage() {
 
   const deck = (matches.data ?? []).filter((m) => !gone.includes(m.ekatte))
   const top = deck[0]
+  const next = deck[1]
 
   const act = useCallback(
     (action: SwipeAction) => {
@@ -65,15 +66,20 @@ export default function DiscoverPage() {
     <div className="mx-auto flex max-w-md flex-col gap-4">
       <h1 className="sr-only">{t('discover.title')}</h1>
       {profile?.completeness === 'none' && (
-        <Button asChild variant="outline">
+        <Button
+          asChild
+          variant="outline"
+          className="h-auto min-h-11 py-2 text-center whitespace-normal"
+        >
           <Link to="/profile/quick">{t('discover.personalise')}</Link>
         </Button>
       )}
 
       <div className="relative h-[33rem]" aria-live="polite">
-        <AnimatePresence custom={exitDirection}>
+        {next && <StackedCard key={`stack-${next.ekatte}`} match={next} />}
+        <AnimatePresence custom={exitDirection} initial={false}>
           {top ? (
-            <SwipeCard key={top.ekatte} match={top} onSwipe={act} exitDirection={exitDirection} />
+            <SwipeCard key={top.ekatte} match={top} onSwipe={act} />
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed text-center">
               <p>{t('discover.empty')}</p>
@@ -91,7 +97,7 @@ export default function DiscoverPage() {
             <Button
               variant="outline"
               size="icon"
-              className="size-16 rounded-full border-2 border-dislike/50 hover:bg-dislike/10"
+              className="size-16 rounded-full border-2 border-dislike/50 hover:bg-dislike/10 active:scale-90"
               aria-label={t('discover.dislike')}
               aria-keyshortcuts="ArrowLeft"
               onClick={() => act('dislike')}
@@ -121,7 +127,7 @@ export default function DiscoverPage() {
             </Button>
             <Button
               size="icon"
-              className="size-16 rounded-full"
+              className="size-16 rounded-full active:scale-90"
               aria-label={t('discover.like')}
               aria-keyshortcuts="ArrowRight"
               onClick={() => act('like')}

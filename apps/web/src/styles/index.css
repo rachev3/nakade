@@ -8,6 +8,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+
   --font-sans: 'Sofia Sans Variable', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Lora Variable', Georgia, serif;
 
@@ -70,7 +74,18 @@
   }
 }
 
+/* Theme switch crossfade (View Transitions API, where supported) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
   *,
   *::before,
   *::after {

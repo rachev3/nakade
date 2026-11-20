@@ -39,7 +39,7 @@ export function ProfileModePicker({
               aria-label={`${t(v === 'quick' ? 'onboarding.quickTitle' : 'onboarding.detailedTitle')}. ${t(`profileMode.${v}`)}`}
               onClick={() => onChange(v)}
               className={cn(
-                'relative flex items-start gap-3 rounded-2xl border p-4 text-left transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                'relative flex items-start gap-3 rounded-2xl border p-4 text-left transition-[color,background-color,border-color,box-shadow,transform] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 active:scale-[0.99]',
                 selected
                   ? 'border-primary bg-accent ring-1 ring-primary'
                   : 'border-input bg-card hover:border-primary/40',
@@ -62,7 +62,10 @@ export function ProfileModePicker({
                 <span className="block text-sm text-muted-foreground">{t(`profileMode.${v}`)}</span>
               </span>
               {selected && (
-                <CheckIcon aria-hidden className="absolute top-3 right-3 size-4 text-primary" />
+                <CheckIcon
+                  aria-hidden
+                  className="absolute top-3 right-3 size-4 animate-in text-primary duration-200 zoom-in-50 fade-in"
+                />
               )}
             </button>
           )
