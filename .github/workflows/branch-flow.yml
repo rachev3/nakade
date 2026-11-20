@@ -1,0 +1,23 @@
+name: branch-flow
+
+# main only receives changes from dev (see docs/devops.md)
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, edited]
+
+jobs:
+  source-is-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require head branch to be dev
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+        run: |
+          if [ "$HEAD_REF" != "dev" ] || [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "::error::PRs into main must come from the dev branch of this repo (got '$HEAD_REPO:$HEAD_REF'). Open your PR into dev instead."
+            exit 1
+          fi
+          echo "OK: dev -> main"
