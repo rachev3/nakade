@@ -37,6 +37,8 @@ function factsOf(s, extra = []) {
 export function createEngine(settlements) {
   const all = settlements.map(({ _id, location, imported_at, ...s }) => s);
   const byEkatte = new Map(all.map((s) => [s.ekatte, s]));
+  // English names of the oblast centres, for English hooks (a centre outside the pilot keeps its Bulgarian name).
+  const nameEn = new Map(all.map((s) => [s.name_bg, s.name_en]));
   const knownEkatte = new Set([...ORIGINS.map((o) => o.ekatte), ...byEkatte.keys()]);
 
   /** current_location → { name, via } where `via` is the oblast centre the drive time is taken to. */
@@ -71,7 +73,7 @@ export function createEngine(settlements) {
     };
   }
 
-  function scoreOne(s, a, weights, origin) {
+  function scoreOne(s, a, weights, origin, lang) {
     const extra = [originFact(s, origin)].filter(Boolean);
     const F = factsOf(s, extra);
     const ctx = { s, a, F, origin };
@@ -121,7 +123,7 @@ export function createEngine(settlements) {
     const { reasons, tradeoffs } = explain(dimensions, ctx);
     return {
       ekatte: s.ekatte,
-      settlement: summary(s, F),
+      settlement: summary(s, F, lang, nameEn),
       score: r3(wKnown ? sum / wKnown : 0),
       confidence: r3(wAll ? conf / wAll : 0),
       passes_constraints: excluded_because.length === 0,
@@ -149,7 +151,7 @@ export function createEngine(settlements) {
     if (request.type) pool = pool.filter((s) => s.type === request.type);
 
     const matches = pool
-      .map((s) => scoreOne(s, answers, weights, origin))
+      .map((s) => scoreOne(s, answers, weights, origin, request.lang))
       .sort(
         (x, y) =>
           Number(y.passes_constraints) - Number(x.passes_constraints) ||
@@ -165,21 +167,26 @@ export function createEngine(settlements) {
     origins: () => ORIGINS,
     settlements: () => all,
     get: (ekatte) => byEkatte.get(ekatte) ?? null,
-    summary: (s) => summary(s, factsOf(s)),
+    summary: (s, lang = "bg") => summary(s, factsOf(s), lang, nameEn),
   };
 }
 
 // ---------- texts: built only from facts; text_key/params follow the frontend i18n keys ----------
 
-function summary(s, F) {
+function summary(s, F, lang = "bg", nameEn = new Map()) {
   const pop = s.population;
   const centre = s.oblast_centre;
   const min = F.v("drive_min_to_oblast_centre");
-  const kind = s.type === "village" ? "Село" : "Град";
+  const isCentre = s.name_bg === centre;
+  const en = (n) => (n == null ? "?" : Number(n).toLocaleString("en-GB"));
   const hook =
-    s.name_bg === centre
-      ? `Областен град с ${fmt(pop)} жители.`
-      : `${kind} с ${fmt(pop)} жители, на ${fmt(min)} мин с кола от ${centre}.`;
+    lang === "en"
+      ? isCentre
+        ? `Oblast centre with ${en(pop)} people.`
+        : `${s.type === "village" ? "Village" : "Town"} of ${en(pop)} people, ${en(min)} min by car from ${nameEn.get(centre) ?? centre}.`
+      : isCentre
+        ? `Областен град с ${fmt(pop)} жители.`
+        : `${s.type === "village" ? "Село" : "Град"} с ${fmt(pop)} жители, на ${fmt(min)} мин с кола от ${centre}.`;
   return {
     ekatte: s.ekatte,
     name_bg: s.name_bg,

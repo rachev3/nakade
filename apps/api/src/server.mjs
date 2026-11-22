@@ -52,11 +52,11 @@ function toContract(m) {
   };
 }
 
-function toSettlement(s) {
+function toSettlement(s, lang) {
   const nearby = settlements
     .filter((x) => x.ekatte !== s.ekatte && (x.parent_town_ekatte === s.ekatte || x.ekatte === s.parent_town_ekatte || (s.parent_town_ekatte && x.parent_town_ekatte === s.parent_town_ekatte)))
-    .map((x) => ({ settlement: engine.summary(x), drive_min: null }));
-  return { ...engine.summary(s), facts: s.facts, nearby };
+    .map((x) => ({ settlement: engine.summary(x, lang), drive_min: null }));
+  return { ...engine.summary(s, lang), facts: s.facts, nearby };
 }
 
 // ---------- routing ----------
@@ -79,6 +79,15 @@ const readBody = (req) =>
 
 const routes = [
   ["POST", /^\/api\/session$/, (req, res, ctx) => send(res, 200, ctx.s.session)],
+  [
+    "DELETE",
+    /^\/api\/session$/,
+    (req, res, ctx) => {
+      sessions.delete(ctx.s.session.session_id);
+      res.setHeader("Set-Cookie", "nakade_sid=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0");
+      send(res, 204);
+    },
+  ],
   ["GET", /^\/api\/profile$/, (req, res, ctx) => send(res, 200, ctx.s.profile)],
   [
     "PATCH",
@@ -96,7 +105,7 @@ const routes = [
     /^\/api\/settlements$/,
     (req, res, ctx) => {
       const type = ctx.url.searchParams.get("type");
-      send(res, 200, settlements.filter((s) => !type || s.type === type).map(engine.summary));
+      send(res, 200, settlements.filter((s) => !type || s.type === type).map((x) => engine.summary(x, ctx.lang)));
     },
   ],
   [
@@ -104,7 +113,7 @@ const routes = [
     /^\/api\/settlements\/(\d{5})$/,
     (req, res, ctx) => {
       const s = engine.get(ctx.m[1]);
-      return s ? send(res, 200, toSettlement(s)) : send(res, 404, { code: "not_found", message: `Unknown EKATTE ${ctx.m[1]}` });
+      return s ? send(res, 200, toSettlement(s, ctx.lang)) : send(res, 404, { code: "not_found", message: `Unknown EKATTE ${ctx.m[1]}` });
     },
   ],
   [
@@ -113,7 +122,7 @@ const routes = [
     async (req, res, ctx) => {
       const body = await readBody(req);
       const swiped = new Set(ctx.s.swipes.map((x) => x.ekatte));
-      const result = engine.rank(ctx.s.profile.answers, { ekatte: body.ekatte, type: body.type, limit: 1000 });
+      const result = engine.rank(ctx.s.profile.answers, { ekatte: body.ekatte, type: body.type, limit: 1000, lang: ctx.lang });
       if (!result.ok) return send(res, 400, { code: "invalid_profile", message: result.errors.join("; ") });
       const matches = result.matches.filter((m) => !body.exclude_swiped || !swiped.has(m.ekatte)).slice(0, body.limit ?? 20);
       send(res, 200, matches.map(toContract));
@@ -135,7 +144,7 @@ const routes = [
     (req, res, ctx) => {
       const saved = ctx.s.swipes
         .filter((x) => x.action !== "dislike" && engine.get(x.ekatte))
-        .map((x) => ({ settlement: engine.summary(engine.get(x.ekatte)), action: x.action, created_at: x.created_at }));
+        .map((x) => ({ settlement: engine.summary(engine.get(x.ekatte), ctx.lang), action: x.action, created_at: x.created_at }));
       send(res, 200, saved.reverse());
     },
   ],
@@ -144,7 +153,7 @@ const routes = [
     /^\/api\/settlements\/(\d{5})\/simulation$/,
     (req, res, ctx) => {
       const s = engine.get(ctx.m[1]);
-      return s ? send(res, 200, buildSimulation(s, ctx.s.profile.answers)) : send(res, 404, { code: "not_found", message: `Unknown EKATTE ${ctx.m[1]}` });
+      return s ? send(res, 200, buildSimulation(s, ctx.s.profile.answers, ctx.lang)) : send(res, 404, { code: "not_found", message: `Unknown EKATTE ${ctx.m[1]}` });
     },
   ],
   [
@@ -152,7 +161,7 @@ const routes = [
     /^\/api\/settlements\/(\d{5})\/plan$/,
     (req, res, ctx) => {
       const s = engine.get(ctx.m[1]);
-      return s ? send(res, 200, buildPlan(s, ctx.s.profile.answers)) : send(res, 404, { code: "not_found", message: `Unknown EKATTE ${ctx.m[1]}` });
+      return s ? send(res, 200, buildPlan(s, ctx.s.profile.answers, ctx.lang)) : send(res, 404, { code: "not_found", message: `Unknown EKATTE ${ctx.m[1]}` });
     },
   ],
 ];
@@ -162,7 +171,7 @@ createServer(async (req, res) => {
   const route = routes.find(([method, re]) => method === req.method && re.test(url.pathname));
   if (!route) return send(res, 404, { code: "not_found", message: `${req.method} ${url.pathname}` });
   try {
-    await route[2](req, res, { url, m: route[1].exec(url.pathname), s: sessionOf(req, res) });
+    await route[2](req, res, { url, m: route[1].exec(url.pathname), s: sessionOf(req, res), lang: (req.headers["accept-language"] ?? "").toLowerCase().startsWith("en") ? "en" : "bg" });
     console.log(`${req.method} ${url.pathname} → ${res.statusCode}`);
   } catch (err) {
     console.error(err);

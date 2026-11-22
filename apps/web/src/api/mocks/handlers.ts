@@ -1,6 +1,6 @@
 import { delay, http, HttpResponse } from 'msw'
 import type { MatchRequest, ProfilePatch, SavedPlace, Swipe } from '../types'
-import { mergeProfile, readDb, writeDb } from './db'
+import { mergeProfile, readDb, resetMockDb, writeDb } from './db'
 import { findPlace, type Lang, PLACES, toSettlement, toSummary } from './fixtures'
 import { matchPlace, rank } from './matcher'
 import { buildPlan, buildSimulation } from './narratives'
@@ -22,6 +22,11 @@ export const handlers = [
       writeDb(db)
     }
     return HttpResponse.json(db.session)
+  }),
+
+  http.delete('*/api/session', () => {
+    resetMockDb()
+    return new HttpResponse(null, { status: 204 })
   }),
 
   http.get('*/api/profile', async () => {

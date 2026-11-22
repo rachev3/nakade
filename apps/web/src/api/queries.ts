@@ -116,6 +116,24 @@ export function useRecordSwipe() {
   })
 }
 
+/** "Delete my data": the session on the server, cached answers here and the journey in localStorage. */
+export function useDeleteMyData() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      unwrap(await api.DELETE('/api/session'))
+    },
+    onSuccess: () => {
+      try {
+        localStorage.removeItem('nakade.journey')
+      } catch {
+        // storage unavailable: nothing stored there either
+      }
+      qc.clear()
+    },
+  })
+}
+
 export async function ensureSession() {
   return unwrap(await api.POST('/api/session'))
 }
