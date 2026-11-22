@@ -111,6 +111,22 @@ export function RootLayout() {
           <Outlet />
         </motion.div>
       </main>
+      <footer className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-4 gap-y-1 px-4 pt-2 pb-6 text-xs text-muted-foreground">
+        <Link to="/privacy" className="hover:underline">
+          {t('footer.privacy')}
+        </Link>
+        <Link to="/sources" className="hover:underline">
+          {t('footer.sources')}
+        </Link>
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noreferrer"
+          className="hover:underline"
+        >
+          {t('footer.osm')}
+        </a>
+      </footer>
       <ScrollRestoration />
     </div>
   )

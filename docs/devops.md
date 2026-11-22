@@ -51,6 +51,17 @@ Since the frontend moved into `apps/web`, both Workers need this build config (D
 
 > ⚠️ **Switch the production `nakade` build config only when the first release containing `apps/web` is merged into `main`.** Until then `main` still has the old layout (root `wrangler.jsonc` + `public/`), and the new settings would break prod deploys. Switch `nakade-dev` when the PR that introduces `apps/web` is merged into `dev`.
 
+### Before the first production release
+
+Production (`nakade`) runs the same Worker as dev, so it needs the same bindings. In order:
+
+1. `npx wrangler d1 create nakade` and paste its `database_id` into the commented `d1_databases` line at the top level of `apps/web/wrangler.jsonc` (not in `env.dev`), then uncomment it. Without it `/api/*` answers 503.
+2. Switch the `nakade` Workers Builds config to the monorepo layout (table above).
+3. Build variable `VITE_GOOGLE_MAPS_API_KEY` on both Workers: a key restricted to `nakade.app` / `dev.nakade.app`, with a daily quota and a billing alert. Without it the "Карта" page shows only a hint.
+4. Release PR `dev` → `main` (merge commit).
+
+Production builds now default to the live API (`VITE_API_MODE` is only needed to force `mock`). The rate limit (`API_LIMITER`) and the daily session cleanup cron (sessions unused for 180 days) are already configured for both environments.
+
 ## 3. Domain & edge (Cloudflare zone `nakade.app`)
 
 - DNS records are created automatically by Worker custom domains (`nakade.app`, `www.nakade.app`, `dev.nakade.app`)

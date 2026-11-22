@@ -163,3 +163,17 @@ test("new answers are validated", () => {
   assert.equal(bad.ok, false);
   assert.ok(["place_type", "office_days", "pets"].every((k) => bad.errors.some((e) => e.startsWith(k))));
 });
+
+// ---------- launch readiness ----------
+
+test("English: hooks and the simulation/plan speak English when asked", async () => {
+  const { buildPlan, buildSimulation } = await import("../src/narratives.js");
+  const en = all({}, { lang: "en" }).matches[0].settlement.hook;
+  const bg = all({}).matches[0].settlement.hook;
+  assert.match(en, /people/);
+  assert.match(bg, /жители/);
+  const s = data.settlements.find((x) => x.name_bg === "Трявна");
+  assert.equal(buildSimulation(s, {}, "en").scenes[0].title, "Morning");
+  assert.match(buildPlan(s, {}, "en").sections[0].items[0].text, /EUR\/month/);
+  assert.equal(buildSimulation(s, {}).scenes[0].title, "Сутрин");
+});

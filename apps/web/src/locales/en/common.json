@@ -119,9 +119,9 @@
         "title": "Any non-negotiables?",
         "hint": "Places without these are set aside, and we tell you why",
         "options": {
-          "hospital_30min": "Hospital within 30 min",
+          "hospital_30min": "Hospital within ~30 min (≤ 20 km)",
           "school": "A school nearby",
-          "train_to_sofia": "Train to Sofia",
+          "train_to_sofia": "Train station nearby (≤ 5 km)",
           "fast_internet": "Fast internet",
           "pharmacy": "Pharmacy nearby",
           "kindergarten": "Kindergarten"
@@ -571,5 +571,126 @@
       "empty": "No places match these filters. Try a lower minimum match."
     },
     "excludedHeading": "Fail a must-have"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "sources": "Data sources",
+    "osm": "Maps and places: © OpenStreetMap contributors"
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy",
+      "updated": "Last updated: 22 November 2026",
+      "lead": "nakade works without an account. We never ask for your name, email or phone. Here is everything we keep, why, for how long and how to delete it.",
+      "sections": [
+        {
+          "title": "What we keep",
+          "body": [
+            "A random session ID in a cookie (nakade_sid). It is sent only to /api, is not readable by scripts and lasts up to 180 days.",
+            "Your answers, the places you like or save, and how far you got. They are tied only to that random ID, not to you as a person.",
+            "Some answers are personal: who you live with, your children's ages, health needs, the city you live in. Every question is optional and is used only to compute your matches.",
+            "On your device (localStorage) we keep your language, theme and where you left off."
+          ]
+        },
+        {
+          "title": "Why",
+          "body": [
+            "To work out which places fit you and remember your progress between visits. We do not sell data, show ads or use tracking tools."
+          ]
+        },
+        {
+          "title": "For how long",
+          "body": [
+            "A session unused for 180 days is deleted automatically. You can delete it right away with the button below."
+          ]
+        },
+        {
+          "title": "Who else is involved",
+          "body": [
+            "Cloudflare hosts the site and the database. It processes your IP address on every request for abuse protection and technical logs.",
+            "Google Maps: when you open a map, your browser loads it directly from Google, which sees your IP address (Google's policy: policies.google.com/privacy)."
+          ]
+        },
+        {
+          "title": "Your rights",
+          "body": [
+            "You can access, correct and delete your data. The fastest way is the button below. Questions: [ADD A CONTACT EMAIL BEFORE LAUNCH]."
+          ]
+        }
+      ],
+      "delete": {
+        "title": "Delete my data",
+        "body": "Deletes your session on the server (answers, liked and saved places) and your progress on this device. This cannot be undone.",
+        "button": "Delete my data",
+        "confirm": "Yes, delete everything",
+        "done": "Done. Your data has been deleted."
+      }
+    },
+    "sources": {
+      "title": "Data sources",
+      "lead": "Every number in nakade comes from a public source and is labelled verified, derived or estimate. These are the sources and their licences.",
+      "licence": "Licence",
+      "list": [
+        {
+          "name": "OpenStreetMap",
+          "url": "https://www.openstreetmap.org/copyright",
+          "licence": "ODbL 1.0",
+          "licenceUrl": "https://opendatacommons.org/licenses/odbl/",
+          "what": "Schools, kindergartens, doctors, hospitals, pharmacies, shops, stops, stations, forests, rivers and protected areas. © OpenStreetMap contributors."
+        },
+        {
+          "name": "OSRM",
+          "url": "https://project-osrm.org",
+          "licence": "routes on OpenStreetMap data (ODbL)",
+          "what": "Driving time and distance to the oblast centres, including Sofia."
+        },
+        {
+          "name": "Ookla Open Data",
+          "url": "https://github.com/teamookla/ookla-open-data",
+          "licence": "CC BY-NC-SA 4.0",
+          "licenceUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+          "what": "Measured fixed and mobile internet speed (Speedtest by Ookla, Q3 2026)."
+        },
+        {
+          "name": "Open-Meteo",
+          "url": "https://open-meteo.com",
+          "licence": "CC BY 4.0",
+          "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "what": "Elevation, mean January temperature and heating need."
+        },
+        {
+          "name": "NSI — 2011 and 2021 censuses",
+          "url": "https://www.nsi.bg",
+          "licence": "official statistics",
+          "what": "Population of each place and its 10-year change."
+        },
+        {
+          "name": "Employment Agency",
+          "url": "https://www.az.government.bg",
+          "licence": "official statistics, 2025",
+          "what": "Unemployment by municipality and job vacancies per 100 unemployed by region."
+        },
+        {
+          "name": "terramap.bg",
+          "url": "https://terramap.bg",
+          "licence": "property listings",
+          "what": "Median rents and prices in the oblast centres; for villages they are an estimate from the nearest city."
+        },
+        {
+          "name": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org",
+          "licence": "author and licence under each photo",
+          "what": "Photos of the places."
+        }
+      ],
+      "howTitle": "How to read the numbers",
+      "statuses": [
+        "Verified: taken directly from the source (e.g. population from the NSI).",
+        "Derived: calculated by us from verified data; distances to services are straight-line, driving times to cities follow the road.",
+        "Estimate: borrowed from another place, e.g. a village's rent from the nearby city's median.",
+        "\"Hospital within 30 min\" means a hospital within 20 km in a straight line; \"Train to Sofia\" only checks for a station within 5 km."
+      ],
+      "updated": "Data collected in November 2026."
+    }
   }
 }

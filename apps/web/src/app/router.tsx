@@ -53,6 +53,8 @@ export const routes = [
             lazy: page(() => import('@/features/simulation/SimulationPage')),
           },
           { path: 'map', lazy: page(() => import('@/features/map/MapPage')) },
+          { path: 'privacy', lazy: page(() => import('@/features/legal/PrivacyPage')) },
+          { path: 'sources', lazy: page(() => import('@/features/legal/SourcesPage')) },
           { path: 'saved', lazy: page(() => import('@/features/compare/SavedPage')) },
           { path: 'compare', lazy: page(() => import('@/features/compare/ComparePage')) },
           {

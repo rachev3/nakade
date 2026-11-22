@@ -59,7 +59,7 @@ src/api/
 
 1. The backend publishes its OpenAPI spec. Replace `src/api/openapi.yaml` with it (or point
    `api:types` at it) and run `pnpm api:types`. Fix any type errors: those are the contract changes.
-2. Build with `VITE_API_MODE=live`. MSW is then not loaded and the "Demo data" badge disappears.
+2. Production builds use the live API by default (MSW is not loaded, no "Demo data" badge). `pnpm dev` stays on mocks; `pnpm dev:live` or `VITE_API_MODE=live` switches it.
 3. The web Worker proxies `/api/*` to the backend (to be added to `wrangler.jsonc` when the backend
    is hosted).
 

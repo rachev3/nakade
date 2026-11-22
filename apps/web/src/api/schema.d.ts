@@ -15,7 +15,8 @@ export interface paths {
         put?: never;
         /** Create or resume the anonymous session (cookie) */
         post: operations["createSession"];
-        delete?: never;
+        /** Delete the session and everything in it (profile, answers, likes); expires the cookie */
+        delete: operations["deleteSession"];
         options?: never;
         head?: never;
         patch?: never;
@@ -418,6 +419,24 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Session"];
                 };
+            };
+        };
+    };
+    deleteSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted (also when there was nothing to delete) */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

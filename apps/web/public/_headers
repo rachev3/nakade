@@ -7,3 +7,7 @@ https://dev.nakade.app/*
 # The MSW worker must always be fresh, or an old mock script can linger after an update.
 /mockServiceWorker.js
   Cache-Control: no-cache
+
+# The hackathon presentation stays reachable by link but out of search results.
+/presentation/*
+  X-Robots-Tag: noindex

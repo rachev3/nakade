@@ -17,6 +17,8 @@ const engine = createEngine(settlements);
 const CONTRACT_DIMS = new Set(DIMENSIONS);
 
 const MAX_BODY_BYTES = 16 * 1024;
+// Sessions unused this long are deleted by the daily cron, and the cookie lives no longer.
+export const SESSION_TTL_DAYS = 180;
 const MAX_MATCH_LIMIT = 100;
 const ORDER = { none: 0, quick: 1, detailed: 2 };
 const SWIPE_ACTIONS = new Set(["like", "dislike", "save"]);
@@ -80,6 +82,22 @@ async function saveSession(db, s) {
   s.isNew = false;
 }
 
+async function deleteSession(db, s) {
+  await db.prepare("DELETE FROM sessions WHERE id = ?").bind(s.session.session_id).run();
+}
+
+/** Cron: delete sessions not updated for SESSION_TTL_DAYS. */
+export async function cleanupSessions(env) {
+  if (!env.DB) return;
+  await ensureSchema(env.DB);
+  const cutoff = new Date(Date.now() - SESSION_TTL_DAYS * 864e5).toISOString();
+  const res = await env.DB.prepare("DELETE FROM sessions WHERE updated_at < ?").bind(cutoff).run();
+  console.log("session cleanup", { cutoff, deleted: res.meta?.changes ?? null });
+}
+
+/** "bg" unless the client asks for English (Accept-Language), like the frontend's language switch. */
+const langOf = (request) => ((request.headers.get("Accept-Language") ?? "").toLowerCase().startsWith("en") ? "en" : "bg");
+
 // ---------- contract helpers (same as server.mjs) ----------
 function toContract(m) {
   const keep = (x) => CONTRACT_DIMS.has(x.dimension ?? x.key ?? x.text_key?.split(".")[1]) || x.text_key?.startsWith("constraint.");
@@ -92,11 +110,11 @@ function toContract(m) {
   };
 }
 
-function toSettlement(s) {
+function toSettlement(s, lang) {
   const nearby = settlements
     .filter((x) => x.ekatte !== s.ekatte && (x.parent_town_ekatte === s.ekatte || x.ekatte === s.parent_town_ekatte || (s.parent_town_ekatte && x.parent_town_ekatte === s.parent_town_ekatte)))
-    .map((x) => ({ settlement: engine.summary(x), drive_min: null }));
-  return { ...engine.summary(s), facts: s.facts, nearby };
+    .map((x) => ({ settlement: engine.summary(x, lang), drive_min: null }));
+  return { ...engine.summary(s, lang), facts: s.facts, nearby };
 }
 
 function settlementOr404(ekatte) {
@@ -146,6 +164,8 @@ function parseMatchRequest(body) {
 // handler(ctx) returns [status, body]. `write: true` routes persist the session afterwards.
 const routes = [
   ["POST", /^\/api\/session$/, { write: true }, (ctx) => [200, ctx.s.session]],
+  // "Delete my data": removes the session row (profile, answers, likes) and expires the cookie.
+  ["DELETE", /^\/api\/session$/, { erase: true }, () => [204]],
   ["GET", /^\/api\/profile$/, {}, (ctx) => [200, ctx.s.profile]],
   [
     "PATCH",
@@ -168,10 +188,10 @@ const routes = [
     (ctx) => {
       const type = ctx.url.searchParams.get("type");
       if (type && !SETTLEMENT_TYPES.has(type)) throw bad("type must be town or village");
-      return [200, settlements.filter((s) => !type || s.type === type).map(engine.summary)];
+      return [200, settlements.filter((s) => !type || s.type === type).map((x) => engine.summary(x, ctx.lang))];
     },
   ],
-  ["GET", /^\/api\/settlements\/(\d{5})$/, {}, (ctx) => [200, toSettlement(settlementOr404(ctx.m[1]))]],
+  ["GET", /^\/api\/settlements\/(\d{5})$/, {}, (ctx) => [200, toSettlement(settlementOr404(ctx.m[1]), ctx.lang)]],
   [
     "POST",
     /^\/api\/matches$/,
@@ -179,7 +199,7 @@ const routes = [
     async (ctx) => {
       const req = parseMatchRequest(await readJson(ctx.request));
       const swiped = new Set(ctx.s.swipes.map((x) => x.ekatte));
-      const result = engine.rank(ctx.s.profile.answers, { ekatte: req.ekatte, type: req.type, limit: 1000 });
+      const result = engine.rank(ctx.s.profile.answers, { ekatte: req.ekatte, type: req.type, limit: 1000, lang: ctx.lang });
       if (!result.ok) throw new HttpError(400, "invalid_profile", result.errors.join("; "));
       const matches = result.matches.filter((m) => !req.exclude_swiped || !swiped.has(m.ekatte)).slice(0, req.limit);
       return [200, matches.map(toContract)];
@@ -206,12 +226,12 @@ const routes = [
     (ctx) => {
       const saved = ctx.s.swipes
         .filter((x) => x.action !== "dislike" && engine.get(x.ekatte))
-        .map((x) => ({ settlement: engine.summary(engine.get(x.ekatte)), action: x.action, created_at: x.created_at }));
+        .map((x) => ({ settlement: engine.summary(engine.get(x.ekatte), ctx.lang), action: x.action, created_at: x.created_at }));
       return [200, saved.reverse()];
     },
   ],
-  ["POST", /^\/api\/settlements\/(\d{5})\/simulation$/, {}, (ctx) => [200, buildSimulation(settlementOr404(ctx.m[1]), ctx.s.profile.answers)]],
-  ["POST", /^\/api\/settlements\/(\d{5})\/plan$/, {}, (ctx) => [200, buildPlan(settlementOr404(ctx.m[1]), ctx.s.profile.answers)]],
+  ["POST", /^\/api\/settlements\/(\d{5})\/simulation$/, {}, (ctx) => [200, buildSimulation(settlementOr404(ctx.m[1]), ctx.s.profile.answers, ctx.lang)]],
+  ["POST", /^\/api\/settlements\/(\d{5})\/plan$/, {}, (ctx) => [200, buildPlan(settlementOr404(ctx.m[1]), ctx.s.profile.answers, ctx.lang)]],
 ];
 
 // ---------- entry ----------
@@ -243,14 +263,19 @@ export async function handleApi(request, env) {
     await ensureSchema(env.DB);
     const s = await loadSession(env.DB, request);
     const wasNew = s.isNew;
-    const [status, body] = await handler({ request, url, m: re.exec(url.pathname), s });
+    const [status, body] = await handler({ request, url, m: re.exec(url.pathname), s, lang: langOf(request) });
+    if (opts.erase) {
+      if (!wasNew) await deleteSession(env.DB, s);
+      const secure = url.protocol === "https:" ? "; Secure" : "";
+      return json(status, body, { "Set-Cookie": `nakade_sid=; Path=/api; HttpOnly; SameSite=Lax; Max-Age=0${secure}` });
+    }
     if (opts.write) await saveSession(env.DB, s);
 
     const headers = {};
     // Hand out the cookie only once the session exists in D1, so read-only visits leave no trace.
     if (wasNew && !s.isNew) {
       const secure = url.protocol === "https:" ? "; Secure" : "";
-      headers["Set-Cookie"] = `nakade_sid=${s.session.session_id}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=31536000${secure}`;
+      headers["Set-Cookie"] = `nakade_sid=${s.session.session_id}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${SESSION_TTL_DAYS * 86400}${secure}`;
     }
     return json(status, body, headers);
   } catch (err) {

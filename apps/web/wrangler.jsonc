@@ -11,13 +11,19 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"],
   },
-  // Production has no DB binding yet, so /api/* answers 503 there and the site stays on mock data.
   "observability": { "enabled": true },
+  // Daily cleanup of sessions unused for 180 days (worker.js → scheduled). Inherited by env.dev.
+  "triggers": { "crons": ["17 3 * * *"] },
   // production: deployed from main by Workers Builds (`npx wrangler deploy`)
   "routes": [
     { "pattern": "nakade.app", "custom_domain": true },
     { "pattern": "www.nakade.app", "custom_domain": true },
   ],
+  // BEFORE THE FIRST RELEASE: production needs its own D1, or /api/* answers 503 and the site shows nothing.
+  //   npx wrangler d1 create nakade   → paste the database_id it prints into the line below, then uncomment it.
+  // "d1_databases": [{ "binding": "DB", "database_name": "nakade", "database_id": "<from wrangler d1 create>" }],
+  // 120 API requests per minute per IP. namespace_id is any account-unique integer.
+  "ratelimits": [{ "name": "API_LIMITER", "namespace_id": "1002", "simple": { "limit": 120, "period": 60 } }],
   "env": {
     // dev: deployed from dev by Workers Builds (`npx wrangler deploy --env dev`).
     // noindex for dev.nakade.app is set in public/_headers.

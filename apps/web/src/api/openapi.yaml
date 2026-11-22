@@ -26,6 +26,12 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Session' }
+    delete:
+      operationId: deleteSession
+      summary: Delete the session and everything in it (profile, answers, likes); expires the cookie
+      responses:
+        '204':
+          description: Deleted (also when there was nothing to delete)
   /api/profile:
     get:
       operationId: getProfile
