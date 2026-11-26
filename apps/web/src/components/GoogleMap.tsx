@@ -69,16 +69,18 @@ export function GoogleMap({ markers, className }: { markers: MapMarker[]; classN
             glyphColor: '#ffffff',
             scale: m.primary ? 1.4 : 1,
           })
-          if (m.muted) pin.element.style.opacity = '0.45'
+          // PinElement is itself an HTMLElement; its old `.element` property is deprecated.
+          if (m.muted) pin.style.opacity = '0.45'
           const marker = new AdvancedMarkerElement({
             map,
             position: { lat: m.lat, lng: m.lon },
             title: m.title,
-            content: pin.element,
+            content: pin,
             zIndex: m.primary ? 1000 : undefined,
+            gmpClickable: true,
           })
           bounds.extend({ lat: m.lat, lng: m.lon })
-          marker.addListener('click', () => {
+          marker.addEventListener('gmp-click', () => {
             info.setOptions({ headerContent: m.title, content: infoContent(m) })
             info.open({ map, anchor: marker })
           })
