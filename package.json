@@ -1,0 +1,14 @@
+{
+  "name": "nakade",
+  "private": true,
+  "packageManager": "pnpm@12.11.2",
+  "scripts": {
+    "dev": "pnpm --filter @nakade/web dev",
+    "build": "pnpm --filter @nakade/web build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nakade — презентация</title>
+<meta name="description" content="nakade на FMI Open Data Hackathon, 20.11.2026: проблемът, данните, демото и какво следва.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400..700&family=Inter:wght@400;600&display=swap">
+<style>
+* { margin: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: #141815; overflow: hidden; font: 32px/1.2 'Inter', Arial, sans-serif; }
+img, video { display: block; }
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 6px; }
+ul { margin: 0; }
+x-shape { display: block; }
+x-shape[kind="arrow-right"] { clip-path: polygon(0 30%, 60% 30%, 60% 0, 100% 50%, 60% 100%, 60% 70%, 0 70%); }
+.stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: 0 0; counter-reset: page; }
+.slide { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility 0s .35s; }
+.slide.active { opacity: 1; visibility: visible; transition: opacity .35s ease; }
+.slide:not(.active) .rise { animation: none; }
+.nav { position: fixed; right: 12px; top: 12px; display: flex; gap: 6px; align-items: center; padding: 6px; border-radius: 999px; background: rgb(20 24 21 / .72); color: #e8ebe6; font: 600 14px/1 'Inter', system-ui, sans-serif; backdrop-filter: blur(6px); opacity: .35; transition: opacity .2s; z-index: 10; }
+.nav:hover, .nav:focus-within { opacity: 1; }
+.nav button { font: inherit; color: inherit; background: none; border: 0; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; }
+.nav button:hover { background: rgb(255 255 255 / .12); }
+.nav button:focus-visible { outline: 2px solid #e48a66; outline-offset: 1px; }
+.nav .count { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .rise { animation: none !important; } .slide { transition: none !important; } }
+/* deck styles */
+:root {
+  --bg: #f6f4ef;
+  --sand: #ece6d9;
+  --surface: #fffdf8;
+  --ink: #1f2a24;
+  --muted: #56625a;
+  --line: #ddd6c7;
+  --green: #2f5d46;
+  --green-soft: #e1eae2;
+  --clay: #b4532f;
+  --on-dark: #f6f4ef;
+  --on-dark-muted: #c9d6cd;
+}
+
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  color: var(--ink);
+}
+
+.slide {
+  padding: 128px 128px 160px;
+  background: var(--bg);
+  color: var(--ink);
+  counter-increment: page;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.slide.sand { background: var(--sand); }
+
+h1, h2, h3 {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+h2 { font-size: 72px; }
+h3 { font-size: 32px; }
+
+.head { display: flex; flex-direction: column; gap: 16px; }
+
+.eyebrow {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+
+.lead { font-size: 32px; line-height: 1.4; color: var(--muted); }
+.small { font-size: 24px; line-height: 1.4; color: var(--muted); }
+
+/* footer */
+.foot {
+  position: absolute;
+  left: 128px;
+  bottom: 64px;
+  width: 1664px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 24px;
+  color: var(--muted);
+}
+.foot .pg::after { content: counter(page); }
+
+/* cards */
+.card {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 24px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card .txt { font-size: 24px; line-height: 1.45; color: var(--muted); }
+.card .big {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--green);
+}
+.card .tag {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--clay);
+}
+
+/* empty frames for photos / clips, filled later in the editor */
+.ph {
+  background: var(--sand);
+  border: 3px dashed #b9b09c;
+  border-radius: 24px;
+  object-fit: cover;
+}
+
+.shot {
+  border: 2px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(31,42,36,.12);
+}
+
+/* motion: staged arrival */
+.rise { animation: rise 600ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 120ms); }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* cover */
+.cover { padding: 128px; justify-content: center; gap: 0; }
+.cover .hero { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+.cover .veil {
+  position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
+  background: linear-gradient(90deg, rgba(246,244,239,.96) 0%, rgba(246,244,239,.9) 38%, rgba(246,244,239,0) 66%);
+}
+.cover .copy { width: 860px; display: flex; flex-direction: column; gap: 28px; }
+.cover h1 { font-size: 160px; font-weight: 700; letter-spacing: -3px; line-height: 1; }
+.cover .dot { color: var(--clay); }
+.cover .claim { font-family: 'Lora', Georgia, serif; font-size: 44px; line-height: 1.2; color: var(--ink); }
+.cover .path { font-size: 32px; color: var(--green); font-weight: 600; }
+.cover .team { font-size: 24px; color: var(--muted); line-height: 1.5; }
+
+/* problem */
+.problem-grid { display: grid; grid-template-columns: 640px 1fr; gap: 48px; flex: 1; }
+.numcard { background: var(--green); border-radius: 24px; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+.numcard .n { font-family: 'Lora', Georgia, serif; font-size: 120px; font-weight: 700; color: var(--on-dark); line-height: 1; }
+.numcard .l { font-size: 32px; line-height: 1.35; color: var(--on-dark); }
+.numcard .s { font-size: 24px; color: var(--on-dark-muted); }
+.questions { display: flex; flex-direction: column; gap: 16px; }
+.q { background: var(--surface); border: 2px solid var(--line); border-radius: 20px; padding: 22px 28px; font-size: 32px; font-family: 'Lora', Georgia, serif; color: var(--ink); }
+.who { font-size: 24px; color: var(--muted); }
+.who b { color: var(--ink); }
+
+/* goal (statement) */
+.statement { background: var(--green); justify-content: center; gap: 40px; }
+.statement .eyebrow { color: #f1c7b3; }
+.statement h2 { color: var(--on-dark); font-size: 72px; line-height: 1.18; width: 1500px; }
+.statement .lead { color: var(--on-dark-muted); width: 1300px; }
+
+/* solution flow */
+.flow { display: flex; align-items: stretch; gap: 12px; }
+.flow .card { flex: 1; padding: 28px; }
+.flow .arrow { flex: none; align-self: center; width: 40px; height: 24px; background: var(--clay); }
+.flow .step { font-size: 24px; font-weight: 600; color: var(--clay); }
+.why { background: var(--green-soft); border-radius: 20px; padding: 24px 32px; font-size: 28px; line-height: 1.4; color: var(--ink); }
+.why b { color: var(--green); }
+
+/* demo */
+.demo-grid { display: grid; grid-template-columns: 1fr 1100px; gap: 40px; }
+.steps { display: flex; flex-direction: column; gap: 20px; }
+.steps .st { display: flex; flex-direction: column; gap: 4px; border-top: 2px solid var(--line); padding-top: 16px; }
+.steps .k { font-size: 24px; font-weight: 600; color: var(--clay); }
+.steps .v { font-family: 'Lora', Georgia, serif; font-size: 32px; color: var(--ink); }
+.steps .backup { font-size: 24px; color: var(--muted); }
+
+/* results */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.change { background: var(--surface); border-left: 6px solid var(--clay); border-radius: 12px; padding: 24px 32px; font-size: 32px; line-height: 1.35; font-family: 'Lora', Georgia, serif; }
+
+/* next */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.cols .card { padding: 48px; gap: 24px; }
+.cols h3 { font-size: 44px; }
+.cols ul { font-size: 32px; line-height: 1.4; color: var(--ink); padding-left: 36px; display: flex; flex-direction: column; gap: 20px; }
+
+.grid6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.grid6 .card { padding: 36px; }
+.grid6 .txt { font-size: 28px; }
+
+/* thanks */
+.dark { background: var(--ink); color: var(--on-dark); justify-content: center; }
+.dark h2 { color: var(--on-dark); font-size: 120px; }
+.dark .eyebrow { color: #f1c7b3; }
+.thanks-grid { display: grid; grid-template-columns: 1fr 360px; gap: 64px; align-items: center; }
+.links { display: flex; flex-direction: column; gap: 20px; }
+.links .lk { font-size: 44px; font-family: 'Lora', Georgia, serif; color: var(--on-dark); }
+.links .sub { font-size: 32px; color: var(--on-dark-muted); }
+.qr { background: #f6f4ef; border-radius: 20px; }
+.qrcap { font-size: 24px; color: var(--on-dark-muted); text-align: center; }
+
+/* in a browser, flow text must sit above the pinned cover photo */
+.cover .copy { position: relative; }
+</style>
+</head>
+<body>
+<main class="stage" id="stage" aria-label="Презентация nakade">
+<section id="cover" class="slide cover" aria-roledescription="slide" data-transition="fade">
+<img class="hero" src="hero.webp" alt="Човек с раница стои на път, който води от блоковете на града през овощни градини до планинско село с червени покриви.">
+<div class="veil"></div>
+<div class="copy">
+<p class="eyebrow rise" style="--i:0">FMI Open Data Hackathon · 20.11.2026 · маса 8</p>
+<h1 class="rise" style="--i:1">nakade<span class="dot">.</span></h1>
+<p class="claim rise" style="--i:2">Открий къде в България пасва животът, който искаш.</p>
+<p class="path rise" style="--i:3">Открий мястото → Пробвай живота → Планирай</p>
+<p class="team rise" style="--i:4">Token Burners: Димитър Рачев, Борислав Костадинов, Кристиян Гешев<br>nakade.app</p>
+</div>
+</section>
+<section id="problem" class="slide" aria-roledescription="slide">
+<div class="head">
+<p class="eyebrow">01 · Проблемът</p>
+<h2>Местенето е голямо решение, което взимаме на сляпо.</h2>
+</div>
+<div class="problem-grid">
+<div class="numcard rise" style="--i:0">
+<p class="n" style="white-space:nowrap">100&#160;203</p>
+<p class="l">души се преместиха в друго населено място в България през 2025 г.</p>
+<p class="s">44% град → град · 25% село → град<br>22% град → село · 9% село → село</p>
+<p class="s">Източник: НСИ, „Население и демографски процеси 2025“, 29.04.2026</p>
+</div>
+<div class="questions">
+<p class="q rise" style="--i:1">Има ли лекар и училище наблизо?</p>
+<p class="q rise" style="--i:2">Колко ще пътувам до работа или до града?</p>
+<p class="q rise" style="--i:3">Ще имам ли нормален интернет?</p>
+<p class="q rise" style="--i:4">Колко ще ми струва зимата?</p>
+<p class="who rise" style="--i:5">Отговорите са разпилени в много различни източници. Засяга <b>семейства с деца</b>, <b>хора, които работят от вкъщи</b>, и <b>всеки, който мисли да се върне в родния край</b>.</p>
+</div>
+</div>
+<div class="foot"><span>nakade · Token Burners</span><span class="pg"></span></div>
+</section>
+<section id="goal" class="slide statement" aria-roledescription="slide">
+<p class="eyebrow">02 · Целта за днес</p>
+<h2 class="rise" style="--i:0">Човек описва как иска да живее и вижда кои от 90 места в България му пасват, защо, и как би изглеждал денят му там.</h2>
+<p class="lead rise" style="--i:1">30-те най-големи града и по 2 по-малки места около всеки. Всеки факт с източник.</p>
+<div class="foot" style="color:#c9d6cd"><span>nakade · Token Burners</span><span class="pg"></span></div>
+</section>
+<section id="solution" class="slide sand" aria-roledescription="slide">
+<div class="head">
+<p class="eyebrow">03 · Решението и данните</p>
+<h2>От отворени данни до отговор</h2>
+</div>
+<div class="flow">
+<div class="card rise" style="--i:0">
+<p class="step">1 · Източници</p>
+<h3>7 източника</h3>
+<p class="txt">OpenStreetMap, OSRM, Open-Meteo, Ookla, НСИ (преброявания 2011 и 2021), Агенция по заетостта, обяви за имоти.</p>
+</div>
+<x-shape kind="arrow-right" class="arrow"></x-shape>
+<div class="card rise" style="--i:1">
+<p class="step">2 · Обработка</p>
+<h3>4 050 факта</h3>
+<p class="txt">90 места × 45 показателя, вързани към ЕКАТТЕ код. Всеки факт пази източник, дата и статус: проверен, изчислен или ориентировъчен.</p>
+</div>
+<x-shape kind="arrow-right" class="arrow"></x-shape>
+<div class="card rise" style="--i:2">
+<p class="step">3 · Съвпадение</p>
+<h3>Профил ↔ място</h3>
+<p class="txt">10 бързи или 30 подробни въпроса дават тегла по 7 измерения. Задължителното се проверява, желаното подрежда.</p>
+</div>
+<x-shape kind="arrow-right" class="arrow"></x-shape>
+<div class="card rise" style="--i:3">
+<p class="step">4 · Обяснение</p>
+<h3>Само от фактите</h3>
+<p class="txt">„Защо пасва“, денят там и планът се сглобяват от фактите и сочат източника. Нищо не се измисля.</p>
+</div>
+</div>
+<p class="why rise" style="--i:4"><b>Защо тези данни:</b> отворени и официални са, покриват цялата страна, повечето до ниво село, и могат да се обновяват автоматично. Селото оценяваме заедно с околността, не само в границите му.</p>
+<div class="foot"><span>nakade · Token Burners</span><span class="pg"></span></div>
+</section>
+<section id="demo" class="slide" aria-roledescription="slide">
+<div class="head">
+<p class="eyebrow">04 · Демо на живо</p>
+<h2>Да го видим в действие</h2>
+</div>
+<div class="demo-grid">
+<div class="steps">
+<div class="st rise" style="--i:0"><p class="k">1</p><p class="v">Профил: как искаш да живееш</p></div>
+<div class="st rise" style="--i:1"><p class="k">2</p><p class="v">Swipe през местата, които ти пасват</p></div>
+<div class="st rise" style="--i:2"><p class="k">3</p><p class="v">Един ден там</p></div>
+<div class="st rise" style="--i:3"><p class="k">4</p><p class="v">План за преместването</p></div>
+<p class="backup">Резервен вариант: видеото вдясно, пуска се с клик.</p>
+</div>
+<video class="shot" src="demo.webm" poster="demo-poster.jpg" controls preload="none" playsinline aria-label="Запис на демото: профил, swipe, Сапарева баня, един ден там и план за преместване" style="width:1100px; height:619px; object-fit:cover;"></video>
+</div>
+<div class="foot"><span>nakade · Token Burners</span><span class="pg"></span></div>
+</section>
+<section id="results" class="slide sand" aria-roledescription="slide">
+<div class="head">
+<p class="eyebrow">05 · Резултати</p>
+<h2>Какво показаха данните за 90 места</h2>
+</div>
+<div class="stats">
+<div class="card rise" style="--i:0">
+<p class="tag">Лекар</p>
+<p class="big">52/60</p>
+<p class="txt">малки места нямат отбелязан лекар в OpenStreetMap. Медиана до най-близкия: 7,3 км по права линия.</p>
+</div>
+<div class="card rise" style="--i:1">
+<p class="tag">Отопление</p>
+<p class="big">73–113%</p>
+<p class="txt">нужда от отопление спрямо София: от Поморие до Мърчаево.</p>
+</div>
+<div class="card rise" style="--i:2">
+<p class="tag">Интернет</p>
+<p class="big">99 Mbps</p>
+<p class="txt">медиана на фиксирания интернет в малките места. За всички 90: 142 Mbps.</p>
+</div>
+<div class="card rise" style="--i:3">
+<p class="tag">Път</p>
+<p class="big">21 мин</p>
+<p class="txt">медиана с кола от малките места до областния град.</p>
+</div>
+</div>
+<p class="change rise" style="--i:4">Вместо „в селото няма лекар“ показваме колко далеч е най-близкият и откъде го знаем. Така човек решава по факти, не по слухове.</p>
+<div class="foot"><span>Източници: OpenStreetMap · Open-Meteo · Ookla 2026 Q3 · OSRM · извлечено 20.11.2026</span><span class="pg"></span></div>
+</section>
+<section id="next" class="slide" aria-roledescription="slide">
+<div class="head">
+<p class="eyebrow">06 · Какво следва</p>
+<h2>Накъде продължаваме</h2>
+</div>
+<div class="grid6">
+<div class="card rise" style="--i:0">
+<h3>Цяла България</h3>
+<p class="txt">Всички населени места, не само пилотните 90.</p>
+</div>
+<div class="card rise" style="--i:1">
+<h3>Официални регистри</h3>
+<p class="txt">Лекари и училища от регистрите на МЗ и МОН, не само от OpenStreetMap.</p>
+</div>
+<div class="card rise" style="--i:2">
+<h3>Реален транспорт</h3>
+<p class="txt">Разписания на влакове и автобуси и време с кола до болница.</p>
+</div>
+<div class="card rise" style="--i:3">
+<h3>AI разказ</h3>
+<p class="txt">Езиков модел преразказва фактите по-човешки, като цитира всеки от тях.</p>
+</div>
+<div class="card rise" style="--i:4">
+<h3>Тестове с хора</h3>
+<p class="txt">С хора, които наистина мислят да се местят.</p>
+</div>
+<div class="card rise" style="--i:5">
+<h3>На английски</h3>
+<p class="txt">За българите в чужбина, които мислят да се върнат.</p>
+</div>
+</div>
+<div class="foot"><span>nakade · Token Burners</span><span class="pg"></span></div>
+</section>
+<section id="thanks" class="slide dark" aria-roledescription="slide">
+<div class="thanks-grid">
+<div class="links">
+<p class="eyebrow rise" style="--i:0">Въпроси?</p>
+<h2 class="rise" style="--i:1">Благодарим!</h2>
+<p class="lk rise" style="--i:2"><a href="https://nakade.app">nakade.app</a></p>
+<p class="lk rise" style="--i:3"><a href="https://github.com/rachev3/nakade">github.com/rachev3/nakade</a></p>
+<p class="sub rise" style="--i:4">Token Burners: Димитър Рачев, Борислав Костадинов, Кристиян Гешев</p>
+</div>
+<div class="links">
+<img class="qr" src="qr.png" alt="QR код към github.com/rachev3/nakade" style="width:360px; height:360px; object-fit:contain;">
+<p class="qrcap">Кодът в GitHub</p>
+</div>
+</div>
+</section>
+</main>
+<nav class="nav" aria-label="Слайдове">
+<button type="button" id="prev" aria-label="Предишен слайд">&#8592;</button>
+<span class="count" id="count" aria-live="polite">1 / 8</span>
+<button type="button" id="next" aria-label="Следващ слайд">&#8594;</button>
+<button type="button" id="full" aria-label="На цял екран">&#9974;</button>
+</nav>
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const slides = [...stage.querySelectorAll('.slide')];
+  const count = document.getElementById('count');
+  let i = 0;
+  const fit = () => {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `scale(${s}) translate(-50%, -50%)`;
+  };
+  const show = (n, push = true) => {
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((el, k) => {
+      el.classList.toggle('active', k === n);
+      el.setAttribute('aria-hidden', k === n ? 'false' : 'true');
+      if (k !== n) el.querySelectorAll('video').forEach((v) => v.pause());
+    });
+    i = n;
+    count.textContent = `${n + 1} / ${slides.length}`;
+    if (push) history.replaceState(null, '', '#' + (n + 1));
+  };
+  const go = (d) => show(i + d);
+  addEventListener('resize', fit);
+  addEventListener('keydown', (e) => {
+    if (e.target.closest && e.target.closest('video')) { if (e.key === ' ') return; }
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); go(1); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); go(-1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') toggleFull();
+  });
+  const toggleFull = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen?.().catch(() => {});
+  };
+  document.getElementById('prev').onclick = () => go(-1);
+  document.getElementById('next').onclick = () => go(1);
+  document.getElementById('full').onclick = toggleFull;
+  stage.addEventListener('click', (e) => {
+    if (e.target.closest('video, a, button')) return;
+    go(e.clientX < innerWidth / 3 ? -1 : 1);
+  });
+  let tx = null;
+  addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; }, { passive: true });
+  addEventListener('touchend', (e) => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+  });
+  addEventListener('hashchange', () => show((parseInt(location.hash.slice(1), 10) || 1) - 1, false));
+  fit();
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1, false);
+})();
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Frontend
 
-Owner: rachev3 · Status: **Agreed** · Code: `apps/web/` (not scaffolded yet)
+Owner: rachev3 · Status: **Agreed** · Code: [`apps/web/`](../apps/web/README.md) (skeleton scaffolded, running on mocks)
 
 ## 1. Stack
 
@@ -19,7 +19,7 @@ Owner: rachev3 · Status: **Agreed** · Code: `apps/web/` (not scaffolded yet)
 | API client | **openapi-typescript + openapi-fetch** | Types generated from the backend's OpenAPI spec |
 | Mocking | **MSW** | Build the UI before the backend exists |
 | i18n | **react-i18next**, Bulgarian default + English | Market is Bulgaria; English for judges and expats |
-| Tests | **Vitest + Testing Library**; **Playwright** smoke tests | Unit for logic, e2e for the two journeys |
+| Tests | **Vitest + Testing Library**; **Playwright** smoke tests | Unit for logic, e2e for the two journeys. *Deferred for the hackathon, not set up yet* |
 | Lint/format | **ESLint + Prettier** | Standard |
 | Package manager | **pnpm** workspaces | Monorepo-friendly |
 
@@ -42,6 +42,8 @@ Both journeys share one route tree. The entry point only sets where the user sta
 | `/compare?ids=…` | Side-by-side comparison of saved places | both |
 | `/saved` | Saved / liked places | both |
 | `/plan/:ekatte` | Personalized relocation plan / checklist | both |
+
+**Choosing depth:** both start pages (`/start/known`, `/start/discover`) let the user pick Quick Match (5 questions) or Detailed Match (up to 13) before the questions start.
 
 **Progressive profiling:** one profile object with a `completeness` level (`quick` → `detailed`). "Upgrade to Detailed Match" adds steps and never resets anything. Answers, swipes and saved places are kept and re-scored.
 
@@ -87,6 +89,7 @@ This is the most important UI rule in the product.
 | Fast | Route-level code splitting; maps and simulation lazy-loaded; target < 200 KB JS for the first screen |
 | Resumable | Profile progress persisted server-side by session; a reload never loses progress |
 | Light/dark | Tokens on `:root` with dark overrides |
+| Calm motion | One easing curve, 150–450ms, ≤ 24px movement (`apps/web/src/lib/motion.ts`). Page fade-in, step slides, stacked swipe deck, score bars filling, theme crossfade. All of it switches off with `prefers-reduced-motion` |
 
 ## 6. What the frontend needs from the API
 
@@ -99,12 +102,19 @@ The backend team owns the actual design (see [proposals/backend.md](proposals/ba
 - Simulation for (settlement, profile): ordered scenes, each tagged fact or scenario with fact IDs
 - Relocation plan for (settlement, profile)
 
-Until endpoints exist, MSW handlers in `apps/web/src/api/mocks` serve fixtures shaped like the OpenAPI spec.
+Until endpoints exist, MSW handlers in `apps/web/src/api/mocks` serve fixtures shaped like the OpenAPI spec. The frontend wrote a **draft** spec, [`apps/web/src/api/openapi.yaml`](../apps/web/src/api/openapi.yaml), from the sketch in the backend proposal. The backend team owns the contract and replaces it with their own. MSW runs in local dev and in the deployed build (`VITE_API_MODE=mock`, the default) until the backend exists. While it does, the UI shows a "Demo data" badge and tags every fixture fact as DEMO, because fixture values are placeholders.
 
-## 7. Next steps (when development starts)
+## 7. Next steps
 
-1. Scaffold `apps/web` (Vite + React + TS + Tailwind + Router + Query), move `wrangler.jsonc` into it
-2. Design tokens, base layout, `<Fact>` / `<Scenario>` components
-3. Mock API (MSW) with 3–5 hand-written settlements
-4. Landing → Quick Match → swipe deck → place detail (the end-to-end skeleton)
-5. Simulation prototype
+Done (skeleton): `apps/web` scaffold, `wrangler.jsonc` moved into it, neutral design tokens + base layout, `<Fact>` / `<Scenario>`, MSW mock API with 5 towns + 2 villages, the full clickable journey (landing → start → Quick/Detailed Match → swipe deck → place detail → simulation stub → saved / compare / plan stubs).
+
+Next:
+1. ~~Visual direction~~ Done: "Rodopi calm" (forest green + clay on cream, Lora + Sofia Sans, light and dark). See `apps/web/src/styles/tokens.css`
+2. MapLibre map on place detail
+3. Swipe-card images (licensed) and copy
+4. Switch to the real API when the backend publishes its OpenAPI spec
+5. Tests + `web` CI workflow (deferred for the hackathon)
+
+Small implementation notes:
+- TypeScript is pinned to 5.9: typescript-eslint and openapi-typescript don't support TS 7 yet.
+- Landing and the two start pages live in `features/start/`; the saved list lives in `features/compare/`.

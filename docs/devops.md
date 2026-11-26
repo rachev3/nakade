@@ -35,7 +35,21 @@ Both Workers are deployed by **Cloudflare Workers Builds**, connected to `rachev
 - `nakade`: builds on push to `main`, runs `npx wrangler deploy`
 - `nakade-dev`: builds on push to `dev`, runs `npx wrangler deploy --env dev`
 
-Environment config lives in `wrangler.jsonc` (`env.dev`).
+Environment config lives in [`apps/web/wrangler.jsonc`](../apps/web/wrangler.jsonc) (`env.dev`). `noindex` for dev.nakade.app comes from [`apps/web/public/_headers`](../apps/web/public/_headers).
+
+### Workers Builds settings (monorepo layout)
+
+Since the frontend moved into `apps/web`, both Workers need this build config (Dashboard → Workers & Pages → Worker → Settings → Build):
+
+| Setting | `nakade-dev` | `nakade` (prod) |
+|---|---|---|
+| Branch | `dev` | `main` |
+| Root directory | `apps/web` | `apps/web` |
+| Build command | `pnpm install --frozen-lockfile && pnpm build` | `pnpm install --frozen-lockfile && pnpm build` |
+| Deploy command | `npx wrangler deploy --env dev` | `npx wrangler deploy` |
+| Build variables | `PNPM_VERSION=12.11.2`, `NODE_VERSION=24` | `PNPM_VERSION=12.11.2`, `NODE_VERSION=24` |
+
+> ⚠️ **Switch the production `nakade` build config only when the first release containing `apps/web` is merged into `main`.** Until then `main` still has the old layout (root `wrangler.jsonc` + `public/`), and the new settings would break prod deploys. Switch `nakade-dev` when the PR that introduces `apps/web` is merged into `dev`.
 
 ## 3. Domain & edge (Cloudflare zone `nakade.app`)
 
@@ -49,7 +63,7 @@ Environment config lives in `wrangler.jsonc` (`env.dev`).
 | Workflow | Trigger | What |
 |---|---|---|
 | `branch-flow` | PR into `main` | Fails unless the head branch is `dev` |
-| `web` *(when scaffolded)* | PR / push touching `apps/web/**` | lint, typecheck, unit tests, build |
+| `web` *(deferred for the hackathon)* | PR / push touching `apps/web/**` | lint, typecheck, build. Run them locally for now: `pnpm lint && pnpm typecheck && pnpm build` |
 | `api` *(when chosen)* | PR / push touching `apps/api/**` | lint, tests, OpenAPI drift check |
 | `pipeline` *(when chosen)* | manual / schedule | run ingestion, validate output, load DB |
 
@@ -61,6 +75,16 @@ Deployment is done by Cloudflare Workers Builds, not by GitHub Actions. CI only 
 - Runtime secrets (LLM keys, DB URLs) go in **Cloudflare Worker secrets** per environment: `wrangler secret put NAME [--env dev]`.
 - CI secrets (if needed) go in **GitHub Actions secrets**.
 - Each environment has its own DB and its own keys. Dev never points at production data.
+
+### API on the web Worker
+
+`/api/*` runs [apps/api/src/worker.js](../apps/api/src/worker.js) inside the web Worker (`assets.run_worker_first`). It needs **no secrets**:
+- Settlements are bundled from `data/processed/settlements_enriched.json`. To ship new data: run the pipeline, commit the JSON, deploy.
+- Sessions live in D1 (`DB` binding): database `nakade` in production, `nakade-dev` on dev. The table is created on first use.
+- Per-IP rate limit via the `API_LIMITER` binding (120 requests/min).
+- An environment without a `DB` binding answers `503` on `/api/*`.
+
+The frontend calls the real API only when built with the build variable `VITE_API_MODE=live`. It is set on both `nakade` and `nakade-dev`.
 
 ## 6. Observability
 

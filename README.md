@@ -9,8 +9,15 @@ Interactive relocation discovery and planning platform — starting with Bulgari
 
 ## Status
 
-Hackathon concept — preparation phase. No application code yet.
+Hackathon concept. The frontend skeleton ([apps/web](apps/web/README.md)) runs end to end on mock data; backend and data pipeline are not started yet.
 
 ## Hosting
 
-The site is a Cloudflare Worker (static assets) named `nakade`, configured in [wrangler.jsonc](wrangler.jsonc) and served on `nakade.app` and `www.nakade.app`. `public/` currently holds only a placeholder page.
+The site is a Cloudflare Worker (static assets) named `nakade`, configured in [apps/web/wrangler.jsonc](apps/web/wrangler.jsonc) and served on `nakade.app` and `www.nakade.app` (`nakade-dev` → dev.nakade.app). See [docs/devops.md](docs/devops.md).
+
+## Develop
+
+```bash
+pnpm install
+pnpm dev      # frontend on http://localhost:5173, mocked API
+```
