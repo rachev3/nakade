@@ -11,8 +11,12 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"],
   },
-  // Production has no DB binding yet, so /api/* answers 503 there and the site stays on mock data.
   "observability": { "enabled": true },
+  // production bindings. D1 and rate limits are not inherited by env.dev, which has its own below.
+  // Anonymous sessions (profile, swipes) in the production database; dev never shares it.
+  "d1_databases": [{ "binding": "DB", "database_name": "nakade", "database_id": "1fcdcbb2-73f6-411a-a657-f81fdd741320" }],
+  // 120 API requests per minute per IP. namespace_id must differ from dev's.
+  "ratelimits": [{ "name": "API_LIMITER", "namespace_id": "1002", "simple": { "limit": 120, "period": 60 } }],
   // production: deployed from main by Workers Builds (`npx wrangler deploy`)
   "routes": [
     { "pattern": "nakade.app", "custom_domain": true },

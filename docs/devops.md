@@ -80,11 +80,11 @@ Deployment is done by Cloudflare Workers Builds, not by GitHub Actions. CI only 
 
 `/api/*` runs [apps/api/src/worker.js](../apps/api/src/worker.js) inside the web Worker (`assets.run_worker_first`). It needs **no secrets**:
 - Settlements are bundled from `data/processed/settlements_enriched.json`. To ship new data: run the pipeline, commit the JSON, deploy.
-- Sessions live in D1 (`DB` binding, database `nakade-dev`). The table is created on first use.
+- Sessions live in D1 (`DB` binding): database `nakade` in production, `nakade-dev` on dev. The table is created on first use.
 - Per-IP rate limit via the `API_LIMITER` binding (120 requests/min).
-- An environment without a `DB` binding (production for now) answers `503` on `/api/*`.
+- An environment without a `DB` binding answers `503` on `/api/*`.
 
-The frontend calls the real API only when built with the build variable `VITE_API_MODE=live`. Set it on `nakade-dev` after the API is deployed there.
+The frontend calls the real API only when built with the build variable `VITE_API_MODE=live`. It is set on both `nakade` and `nakade-dev`.
 
 ## 6. Observability
 
